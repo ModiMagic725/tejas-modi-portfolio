@@ -1,0 +1,1854 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Start a Project | Tejas Modi</title>
+    <meta
+      name="description"
+      content="Share your idea, requirements and reference files with Tejas Modi, a Python full stack developer, to create a clear project brief."
+    />
+    <meta property="og:title" content="Start a Project | Tejas Modi" />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #101826;
+        --sf: #18233a;
+        --ac: #60a5fa;
+        --sd: #e5c79b;
+        --tx: #e7ecf5;
+        --mut: #92a0b8;
+        --bd: rgba(96, 165, 250, 0.18);
+        --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+        color-scheme: dark;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 84px;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font:
+          400 16px/1.65 Archivo,
+          system-ui,
+          sans-serif;
+        overflow-x: hidden;
+        background-image:
+          linear-gradient(rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(96, 165, 250, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+        font-weight: 800;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .mono {
+        font-family: "DM Mono", monospace;
+        font-size: 0.76rem;
+        letter-spacing: 0.02em;
+      }
+      :focus-visible {
+        outline: 2px solid var(--ac);
+        outline-offset: 3px;
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      section {
+        padding: 90px 0;
+      }
+      h2 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin-bottom: 14px;
+      }
+      .mut {
+        color: var(--mut);
+      }
+      .sd {
+        color: var(--sd);
+      }
+      .btn {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 22px;
+        border-radius: 3px;
+        border: 1px solid var(--bd);
+        background: var(--sf);
+        color: var(--tx);
+        font: 500 0.84rem "DM Mono";
+        cursor: pointer;
+        transition:
+          border-color 0.3s,
+          transform 0.3s var(--ease),
+          background 0.3s;
+      }
+      .btn:hover {
+        border-color: var(--ac);
+      }
+      .btn.p {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #08111e;
+        font-weight: 500;
+      }
+      .btn.p:hover {
+        background: #8dbdfc;
+      }
+      .btn[disabled] {
+        opacity: 0.55;
+        cursor: progress;
+      }
+      .btn.g {
+        background: none;
+      }
+      .w {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: bottom;
+      }
+      .w > span {
+        display: inline-block;
+        transform: translateY(105%);
+        transition: transform 0.9s var(--ease);
+        transition-delay: calc(var(--d, 0) * 0.09s);
+      }
+      .in .w > span {
+        transform: none;
+      }
+      nav {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        padding-top: env(safe-area-inset-top, 0px);
+        border-bottom: 1px solid transparent;
+        transition:
+          background 0.4s,
+          backdrop-filter 0.4s,
+          border-color 0.4s;
+      }
+      nav.sc {
+        background: rgba(16, 24, 38, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-color: var(--bd);
+      }
+      nav .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 68px;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+      .logo i {
+        color: var(--sd);
+        font-style: normal;
+      }
+      .links {
+        display: flex;
+        gap: 26px;
+        align-items: center;
+      }
+      .links a:not(.btn) {
+        font-size: 0.9rem;
+        color: var(--mut);
+        position: relative;
+        padding: 4px 0;
+      }
+      .links a:not(.btn):after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--ac);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s var(--ease);
+      }
+      .links a:hover:after {
+        transform: scaleX(1);
+      }
+      .links a:hover {
+        color: var(--tx);
+      }
+      .links .btn {
+        padding: 9px 18px;
+      }
+      .burger {
+        display: none;
+        background: none;
+        border: 0;
+        color: var(--tx);
+        font-size: 1.6rem;
+        cursor: pointer;
+      }
+      #top {
+        padding: 140px 0 30px;
+      }
+      .lb {
+        color: var(--sd);
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .lb:before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: var(--sd);
+      }
+      h1 {
+        font-size: clamp(2.8rem, 8vw, 6rem);
+        margin-bottom: 18px;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--ac);
+      }
+      .sub {
+        font-size: 1.3rem;
+        margin: 0 0 10px;
+        max-width: 30ch;
+      }
+      .lead {
+        color: var(--mut);
+        max-width: 58ch;
+        margin: 0;
+      }
+      /* intake */
+      #intake {
+        padding-top: 50px;
+      }
+      .ig {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 50px;
+        align-items: start;
+      }
+      .bp {
+        position: sticky;
+        top: 90px;
+        border: 1px solid var(--bd);
+        background: rgba(24, 35, 58, 0.55);
+        padding: 14px;
+      }
+      .bp svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .bp .l {
+        fill: none;
+        stroke: var(--ac);
+        stroke-width: 1;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        transition: stroke-dashoffset 1.2s var(--ease);
+      }
+      .bp.in .l {
+        stroke-dashoffset: 0;
+      }
+      .bn rect,
+      .bn circle,
+      .bn path {
+        fill: var(--bg);
+        stroke: var(--bd);
+        stroke-width: 1.2;
+        transition:
+          fill 0.5s,
+          stroke 0.5s;
+      }
+      .bn text {
+        fill: var(--mut);
+        font:
+          500 10px "DM Mono",
+          monospace;
+      }
+      .bn.on rect,
+      .bn.on circle,
+      .bn.on path {
+        stroke: var(--ac);
+        fill: rgba(96, 165, 250, 0.14);
+      }
+      .bn.on text {
+        fill: var(--tx);
+      }
+      .bn.cur rect,
+      .bn.cur circle,
+      .bn.cur path {
+        stroke: var(--sd);
+      }
+      .an {
+        fill: var(--sd);
+        font:
+          400 9px "DM Mono",
+          monospace;
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      .cur + .an,
+      .an.show {
+        opacity: 1;
+      }
+      #bg2 {
+        transition: transform 0.3s linear;
+      }
+      .stp {
+        display: flex;
+        margin: 0 0 30px;
+        padding: 0;
+        list-style: none;
+        position: relative;
+        counter-reset: s;
+      }
+      .stp:before {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        top: 14px;
+        height: 1px;
+        background: var(--bd);
+      }
+      .stp i {
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        height: 1px;
+        background: var(--ac);
+        transition: width 0.6s var(--ease);
+        width: 0;
+      }
+      .stp li {
+        flex: 1;
+        position: relative;
+      }
+      .stp button {
+        background: none;
+        border: 0;
+        color: var(--mut);
+        font: inherit;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 0;
+        text-align: left;
+      }
+      .stp b {
+        width: 29px;
+        height: 29px;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        border: 1px solid var(--bd);
+        font: 500 0.72rem "DM Mono";
+        transition: all 0.4s;
+      }
+      .stp .done b {
+        background: var(--ac);
+        color: #08111e;
+        border-color: var(--ac);
+      }
+      .stp .cur b {
+        border-color: var(--sd);
+        color: var(--sd);
+      }
+      .stp .cur {
+        color: var(--tx);
+      }
+      .stp button[disabled] {
+        cursor: default;
+      }
+      .stp span {
+        font: 400 0.7rem "DM Mono";
+      }
+      .card {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        padding: 36px;
+        position: relative;
+      }
+      .card:before,
+      .card:after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--sd);
+        opacity: 0.7;
+      }
+      .card:before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+      }
+      .card:after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+      }
+      .pn {
+        animation: pin 0.55s var(--ease);
+      }
+      @keyframes pin {
+        from {
+          opacity: 0;
+          transform: translateX(24px);
+        }
+      }
+      .pn h2 {
+        font-size: 1.8rem;
+        margin: 6px 0 22px;
+        outline: 0;
+      }
+      .fld {
+        position: relative;
+        margin-bottom: 20px;
+      }
+      .fld label,
+      .fs legend {
+        display: block;
+        font: 500 0.72rem "DM Mono";
+        color: var(--mut);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0;
+      }
+      .fld label i {
+        color: var(--sd);
+        font-style: normal;
+      }
+      .hint {
+        font-size: 0.82rem;
+        color: var(--mut);
+        margin: 6px 0 0;
+      }
+      .fld input,
+      .fld textarea {
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--bd);
+        border-radius: 2px;
+        color: var(--tx);
+        font: 400 1rem Archivo;
+        padding: 13px 14px;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .fld textarea {
+        min-height: 130px;
+        resize: vertical;
+      }
+      .fld.big textarea {
+        min-height: 190px;
+      }
+      .fld input:hover,
+      .fld textarea:hover {
+        border-color: rgba(96, 165, 250, 0.4);
+      }
+      .fld input:focus,
+      .fld textarea:focus {
+        outline: 0;
+        border-color: var(--ac);
+        background: #0d1522;
+        box-shadow:
+          -3px -3px 0 -1px var(--ac),
+          3px 3px 0 -1px var(--sd);
+      }
+      .er {
+        display: none;
+        color: #f2c4a0;
+        font-size: 0.85rem;
+        margin-top: 6px;
+      }
+      .er:before {
+        content: "⚠ ";
+      }
+      .bad .er {
+        display: block;
+      }
+      .bad input,
+      .bad textarea {
+        border-color: var(--sd);
+      }
+      .fs {
+        border: 0;
+        padding: 0;
+        margin: 0 0 20px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .chip span {
+        display: inline-block;
+        padding: 8px 14px;
+        border: 1px solid var(--bd);
+        cursor: pointer;
+        font: 400 0.78rem "DM Mono";
+        transition: all 0.25s;
+        position: relative;
+      }
+      .chip:hover span {
+        border-color: var(--ac);
+      }
+      .chip input:checked + span {
+        background: rgba(96, 165, 250, 0.16);
+        border-color: var(--ac);
+        color: var(--tx);
+        padding-left: 26px;
+      }
+      .chip input:checked + span:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        width: 5px;
+        height: 9px;
+        border: solid var(--sd);
+        border-width: 0 2px 2px 0;
+        transform: translateY(-62%) rotate(45deg);
+      }
+      .chip input:focus-visible + span {
+        outline: 2px solid var(--ac);
+        outline-offset: 2px;
+      }
+      .g2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 18px;
+      }
+      .dz {
+        display: block;
+        border: 1px dashed rgba(229, 199, 155, 0.5);
+        padding: 34px 20px;
+        text-align: center;
+        cursor: pointer;
+        background: var(--bg);
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+      }
+      .dz:hover,
+      .dz.dr {
+        border-color: var(--ac);
+        background: #0d1522;
+      }
+      .dz b {
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+      }
+      .dz input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .dz:focus-within {
+        outline: 2px solid var(--ac);
+        outline-offset: 3px;
+      }
+      .fl {
+        list-style: none;
+        margin: 12px 0 0;
+        padding: 0;
+      }
+      .fl li {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 14px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--bd);
+        margin-bottom: 6px;
+        background: var(--bg);
+        animation: pin 0.4s var(--ease);
+      }
+      .fl small {
+        color: var(--mut);
+        font-family: "DM Mono";
+        font-size: 0.72rem;
+      }
+      .fl button {
+        background: none;
+        border: 1px solid var(--bd);
+        color: var(--mut);
+        cursor: pointer;
+        padding: 2px 10px;
+        font: inherit;
+        font-size: 0.75rem;
+      }
+      .fl button:hover {
+        border-color: var(--sd);
+        color: var(--sd);
+      }
+      .fl .nm {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .lk {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .lk input {
+        flex: 1;
+      }
+      .nav2 {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid var(--bd);
+        flex-wrap: wrap;
+      }
+      .rv {
+        margin-bottom: 14px;
+        border: 1px solid var(--bd);
+        padding: 16px 18px;
+        background: var(--bg);
+        animation: pin 0.5s var(--ease) backwards;
+      }
+      .rv:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .rv:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .rv:nth-child(4) {
+        animation-delay: 0.24s;
+      }
+      .rv:nth-child(5) {
+        animation-delay: 0.32s;
+      }
+      .rv h3 {
+        font: 500 0.74rem "DM Mono";
+        color: var(--sd);
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .rv h3 button {
+        background: none;
+        border: 0;
+        color: var(--ac);
+        cursor: pointer;
+        font: inherit;
+        text-transform: none;
+        text-decoration: underline;
+      }
+      .rv dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 6px 14px;
+        font-size: 0.93rem;
+      }
+      .rv dt {
+        color: var(--mut);
+      }
+      .rv dd {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .pb {
+        height: 3px;
+        background: var(--bd);
+        margin-top: 16px;
+        display: none;
+      }
+      .sub2 .pb {
+        display: block;
+      }
+      .pb i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--sd);
+        transition: width 0.2s;
+      }
+      .res {
+        display: none;
+        text-align: center;
+        padding: 36px 8px;
+      }
+      .res.on {
+        display: block;
+        animation: pin 0.6s var(--ease);
+      }
+      .res h2 {
+        font-size: 2rem;
+        margin: 16px 0 8px;
+      }
+      .res p {
+        color: var(--mut);
+        margin: 0 auto 22px;
+        max-width: 44ch;
+      }
+      .res svg {
+        width: 100%;
+        max-width: 440px;
+      }
+      .res .ln {
+        fill: none;
+        stroke: var(--ac);
+        stroke-width: 1.5;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .res.on .ln {
+        animation: dr 0.7s var(--ease) forwards;
+      }
+      .res.on .ln:nth-of-type(2) {
+        animation-delay: 0.5s;
+      }
+      .res.on .ln:nth-of-type(3) {
+        animation-delay: 1s;
+      }
+      @keyframes dr {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .res circle {
+        fill: var(--bg);
+        stroke: var(--sd);
+        stroke-width: 1.5;
+        opacity: 0;
+      }
+      .res.on circle {
+        animation: fi 0.4s forwards;
+      }
+      .res.on circle:nth-of-type(2) {
+        animation-delay: 0.5s;
+      }
+      .res.on circle:nth-of-type(3) {
+        animation-delay: 1s;
+      }
+      .res.on circle:nth-of-type(4) {
+        animation-delay: 1.5s;
+      }
+      @keyframes fi {
+        to {
+          opacity: 1;
+        }
+      }
+      .res text {
+        fill: var(--mut);
+        font:
+          400 9px "DM Mono",
+          monospace;
+        text-anchor: middle;
+      }
+      .dev {
+        margin-top: 14px;
+        font-size: 0.78rem;
+        color: var(--mut);
+      }
+      .dev button {
+        background: none;
+        border: 0;
+        color: var(--ac);
+        cursor: pointer;
+        font: inherit;
+        text-decoration: underline;
+      }
+      .hp {
+        position: absolute;
+        left: -9999px;
+      }
+      .note {
+        font-size: 0.82rem;
+        color: var(--mut);
+        margin: 16px 0 0;
+      }
+      /* how, helps */
+      .how {
+        display: flex;
+        list-style: none;
+        margin: 40px 0 0;
+        padding: 0;
+        position: relative;
+      }
+      .how:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 11px;
+        height: 1px;
+        background: var(--ac);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 1.6s var(--ease);
+      }
+      .how.in:before {
+        transform: scaleX(1);
+      }
+      .how li {
+        flex: 1;
+        padding-top: 38px;
+        position: relative;
+        padding-right: 14px;
+      }
+      .how li:before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        left: 0;
+        width: 13px;
+        height: 13px;
+        background: var(--bg);
+        border: 2px solid var(--sd);
+      }
+      .how .mono {
+        color: var(--sd);
+      }
+      .how h3 {
+        font-size: 1.05rem;
+        margin-top: 4px;
+      }
+      .hp2 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        margin-top: 36px;
+        border-top: 1px solid var(--bd);
+      }
+      .hp2 div {
+        padding: 22px 18px 0 0;
+      }
+      .hp2 h3 {
+        font: 500 0.8rem "DM Mono";
+        color: var(--ac);
+        margin-bottom: 8px;
+      }
+      .hp2 p {
+        margin: 0;
+        color: var(--mut);
+        font-size: 0.92rem;
+      }
+      .cta {
+        border: 1px solid var(--bd);
+        background: var(--sf);
+        padding: 70px 24px;
+        text-align: center;
+        position: relative;
+      }
+      .cta p {
+        color: var(--mut);
+        max-width: 48ch;
+        margin: 12px auto 26px;
+      }
+      footer {
+        border-top: 1px solid var(--bd);
+        padding: 34px 0 40px;
+        color: var(--mut);
+        font-size: 0.9rem;
+      }
+      .fg {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .fg div {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .fg a:hover {
+        color: var(--ac);
+      }
+      @media (max-width: 991px) {
+        .ig {
+          grid-template-columns: 1fr;
+        }
+        .bp {
+          display: none;
+        }
+        .hp2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .how {
+          flex-direction: column;
+        }
+        .how:before {
+          width: 1px;
+          height: auto;
+          left: 6px;
+          right: auto;
+          top: 0;
+          bottom: 0;
+          transform: scaleY(0);
+          transform-origin: top;
+        }
+        .how.in:before {
+          transform: scaleY(1);
+        }
+        .how li {
+          padding: 0 0 26px 34px;
+        }
+        .how li:before {
+          top: 3px;
+        }
+      }
+      @media (max-width: 767px) {
+        section {
+          padding: 64px 0;
+        }
+        .burger {
+          display: block;
+        }
+        .links {
+          position: fixed;
+          inset: 68px 0 auto 0;
+          flex-direction: column;
+          align-items: flex-start;
+          background: rgba(16, 24, 38, 0.97);
+          padding: 24px;
+          gap: 16px;
+          border-bottom: 1px solid var(--bd);
+          transform: translateY(-130%);
+          transition: transform 0.4s var(--ease);
+        }
+        .links.o {
+          transform: none;
+        }
+        .card {
+          padding: 24px 18px;
+        }
+        .g2,
+        .rv dl {
+          grid-template-columns: 1fr;
+        }
+        .stp span {
+          display: none;
+        }
+        .hp2 {
+          grid-template-columns: 1fr;
+        }
+        .fld input,
+        .fld textarea {
+          font-size: 16px;
+        }
+        .nav2 .btn {
+          flex: 1;
+          justify-content: center;
+        }
+        .dz {
+          padding: 28px 12px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+        .w > span {
+          transform: none;
+        }
+        .bp .l,
+        .res .ln {
+          stroke-dashoffset: 0;
+        }
+        .res circle {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="nav">
+      <div class="wrap">
+        <a href="{% url 'home' %}" class="logo" aria-label="Tejas Modi, home"
+          >Tejas Modi<i>.</i></a
+        >
+        <button
+          class="burger"
+          id="bg"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <div class="links" id="lk">
+          <a href="{% url 'home' %}">Home</a><a href="{% url 'about' %}">About</a
+          ><a href="{% url 'frontend_work' %}">Websites</a
+          ><a href="{% url 'backend_projects' %}">Backend Projects</a
+          ><a href="{% url 'contact' %}">Contact</a
+          ><a class="btn p" href="{% url 'start_a_project' %}" aria-current="page"
+            >Start a project</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <header id="top">
+        <div class="wrap in" id="hi">
+          <div class="lb mono">PROJECT INTAKE / 01</div>
+          <h1 aria-label="Start a project">
+            <span class="w"><span style="--d: 0">Start</span></span>
+            <span class="w"><span style="--d: 1">a</span></span>
+            <span class="w"
+              ><span style="--d: 2"><em>project</em></span></span
+            >
+          </h1>
+          <p class="sub">Turn your idea into a clear project blueprint.</p>
+          <p class="lead">
+            Have an idea, a business problem, or a system you want to build?
+            Share the details, requirements, references and files, and create a
+            project brief.
+          </p>
+        </div>
+      </header>
+
+      <section id="intake">
+        <div class="wrap ig">
+          <aside class="bp" id="bp" aria-hidden="true">
+            <svg viewBox="0 0 320 440" id="bg2">
+              <path
+                class="l"
+                pathLength="1"
+                d="M160 66V104M160 150V188M160 238V276M160 322V360"
+              />
+              <path
+                class="l"
+                pathLength="1"
+                d="M20 20H300M20 420H300"
+                stroke-opacity=".4"
+              />
+              <g class="bn" data-n="1">
+                <circle cx="160" cy="44" r="22" />
+                <text x="160" y="48" text-anchor="middle">IDEA</text>
+              </g>
+              <text class="an" x="196" y="40" id="a1">01 · DETAILS</text>
+              <g class="bn" data-n="2">
+                <rect x="100" y="106" width="120" height="44" />
+                <text x="160" y="132" text-anchor="middle">SCOPE</text>
+              </g>
+              <text class="an" x="228" y="132" id="a2">02 · OVERVIEW</text>
+              <g class="bn" data-n="3">
+                <rect x="70" y="190" width="56" height="48" />
+                <rect x="132" y="190" width="56" height="48" />
+                <rect x="194" y="190" width="56" height="48" />
+                <text x="160" y="268" text-anchor="middle">FEATURES</text>
+              </g>
+              <text class="an" x="258" y="216" id="a3">03</text>
+              <g class="bn" data-n="4">
+                <path
+                  d="M120 288v26c0 8 18 12 40 12s40-4 40-12v-26c0-8-18-12-40-12s-40 4-40 12z"
+                />
+                <text x="160" y="346" text-anchor="middle">SYSTEM</text>
+              </g>
+              <text class="an" x="212" y="306" id="a4">04 · FILES</text>
+              <g class="bn" data-n="5">
+                <rect x="100" y="362" width="120" height="44" />
+                <text x="160" y="388" text-anchor="middle">BUILD</text>
+              </g>
+              <text class="an" x="228" y="388" id="a5">05 · REVIEW</text>
+            </svg>
+          </aside>
+
+          <div>
+            <ol class="stp" id="stp" aria-label="Project brief steps">
+              <i id="sf"></i>
+            </ol>
+            <div class="card" id="card">
+              <form
+                id="f"
+                novalidate
+                method="post"
+                action="#"
+                enctype="multipart/form-data"
+              >
+                {% csrf_token %}
+                <div class="hp" aria-hidden="true">
+                  <label
+                    >Leave empty<input
+                      name="website"
+                      tabindex="-1"
+                      autocomplete="off"
+                  /></label>
+                </div>
+
+                <section class="pn" data-s="1" style="padding: 0">
+                  <span class="mono sd">STEP 01</span>
+                  <h2 tabindex="-1">Tell me about you</h2>
+                  <div class="g2">
+                    <div class="fld">
+                      <label for="cn">Full name <i>*</i></label
+                      ><input
+                        id="cn"
+                        name="client_name"
+                        autocomplete="name"
+                        placeholder="Enter your full name"
+                        maxlength="100"
+                      />
+                      <div class="er"></div>
+                    </div>
+                    <div class="fld">
+                      <label for="ce">Email address <i>*</i></label
+                      ><input
+                        id="ce"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        maxlength="254"
+                      />
+                      <div class="er"></div>
+                    </div>
+                    <div class="fld">
+                      <label for="cp">Phone (optional)</label
+                      ><input
+                        id="cp"
+                        name="phone"
+                        type="tel"
+                        autocomplete="tel"
+                        placeholder="Your phone number"
+                        maxlength="25"
+                      />
+                    </div>
+                    <div class="fld">
+                      <label for="cc">Company (optional)</label
+                      ><input
+                        id="cc"
+                        name="company"
+                        autocomplete="organization"
+                        placeholder="Your company or organization"
+                        maxlength="120"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                <section class="pn" data-s="2" hidden style="padding: 0">
+                  <span class="mono sd">STEP 02</span>
+                  <h2 tabindex="-1">What are we building?</h2>
+                  <div class="fld">
+                    <label for="pn">Project name <i>*</i></label
+                    ><input
+                      id="pn"
+                      name="project_name"
+                      placeholder="A working title is fine"
+                      maxlength="120"
+                    />
+                    <div class="er"></div>
+                  </div>
+                  <fieldset class="fs" id="ptf">
+                    <legend>Project type <i class="sd">*</i></legend>
+                    <div class="chips" id="pt"></div>
+                    <div class="er" id="ept"></div>
+                  </fieldset>
+                  <div class="fld big">
+                    <label for="pd">Project description <i>*</i></label
+                    ><textarea
+                      id="pd"
+                      name="project_description"
+                      maxlength="4000"
+                      placeholder="Briefly describe your idea, business problem, or what you want to build."
+                    ></textarea>
+                    <div class="er"></div>
+                  </div>
+                </section>
+
+                <section class="pn" data-s="3" hidden style="padding: 0">
+                  <span class="mono sd">STEP 03</span>
+                  <h2 tabindex="-1">Define the scope</h2>
+                  <div class="fld">
+                    <label for="ft">Core features / modules <i>*</i></label
+                    ><textarea
+                      id="ft"
+                      name="features"
+                      maxlength="4000"
+                      placeholder="What features or modules do you need?"
+                    ></textarea>
+                    <p class="hint">
+                      For example: users, authentication, dashboards, payments,
+                      reports, admin panel, notifications, APIs.
+                    </p>
+                    <div class="er"></div>
+                  </div>
+                  <fieldset class="fs">
+                    <legend>Preferred technology (optional)</legend>
+                    <div class="chips" id="tc"></div>
+                    <p class="hint">
+                      These are preferences, not a promise that every technology
+                      will be used.
+                    </p>
+                  </fieldset>
+                  <div class="fld">
+                    <label for="ar">Additional requirements</label
+                    ><textarea
+                      id="ar"
+                      name="additional_requirements"
+                      maxlength="3000"
+                      placeholder="Anything else that should be considered?"
+                    ></textarea>
+                  </div>
+                  <div class="g2">
+                    <div class="fld">
+                      <label for="bd">Budget range (optional)</label
+                      ><input
+                        id="bd"
+                        name="budget_range"
+                        placeholder="Your own estimate"
+                        maxlength="80"
+                      />
+                    </div>
+                    <div class="fld">
+                      <label for="tl">Desired completion (optional)</label
+                      ><input
+                        id="tl"
+                        name="desired_timeline"
+                        placeholder="A date or timeframe"
+                        maxlength="80"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                <section class="pn" data-s="4" hidden style="padding: 0">
+                  <span class="mono sd">STEP 04</span>
+                  <h2 tabindex="-1">Share your references</h2>
+                  <div class="fld">
+                    <label>Reference links (optional)</label>
+                    <div id="lks"></div>
+                    <button type="button" class="btn g" id="al">
+                      + Add a link
+                    </button>
+                    <div class="er" id="elk"></div>
+                  </div>
+                  <div class="fld">
+                    <label for="fi">Project files (optional)</label
+                    ><label class="dz" id="dz" for="fi"
+                      ><b>Drop your project files here</b
+                      ><span class="mut" id="dzt"></span
+                      ><input id="fi" type="file" multiple
+                    /></label>
+                    <div
+                      class="er"
+                      id="efl"
+                      role="alert"
+                      style="display: none"
+                    ></div>
+                    <ul class="fl" id="fl"></ul>
+                  </div>
+                </section>
+
+                <section class="pn" data-s="5" hidden style="padding: 0">
+                  <span class="mono sd">STEP 05</span>
+                  <h2 tabindex="-1">Review your project brief</h2>
+                  <div id="rvw"></div>
+                  <p class="note">
+                    Submitted information is collected only to review your
+                    project request.
+                  </p>
+                  <div class="pb" aria-hidden="true"><i id="pbi"></i></div>
+                </section>
+
+                <div class="nav2">
+                  <button type="button" class="btn g" id="bk" hidden>
+                    ← Back</button
+                  ><span style="flex: 1"></span
+                  ><button type="button" class="btn p" id="nx">Next →</button
+                  ><button type="submit" class="btn p" id="sb" hidden>
+                    Submit project brief
+                  </button>
+                </div>
+                <div
+                  id="live"
+                  class="mono mut"
+                  role="status"
+                  aria-live="polite"
+                  style="
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                  "
+                ></div>
+                
+              </form>
+
+              <div class="res" id="ok" role="status" tabindex="-1">
+                <svg viewBox="0 0 440 90" aria-hidden="true">
+                  <path class="ln" pathLength="1" d="M60 40H160" />
+                  <path class="ln" pathLength="1" d="M180 40H260" />
+                  <path class="ln" pathLength="1" d="M280 40H380" />
+                  <circle cx="50" cy="40" r="10" />
+                  <circle cx="170" cy="40" r="10" />
+                  <circle cx="270" cy="40" r="10" />
+                  <circle cx="390" cy="40" r="10" />
+                  <text x="50" y="76">IDEA</text>
+                  <text x="170" y="76">BRIEF</text>
+                  <text x="270" y="76">REQUIREMENTS</text>
+                  <text x="390" y="76">RECEIVED</text>
+                </svg>
+                <h2>Project brief received</h2>
+                <p id="okm">Your project brief has been received.</p>
+                <a class="btn" href="{% url 'home' %}">Back to home</a>
+              </div>
+              <div class="res" id="bad" role="alert" tabindex="-1">
+                <h2>Brief could not be sent</h2>
+                <p id="bm">Please try again.</p>
+                <button class="btn p" id="ty">Try again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how">
+        <div class="wrap">
+          <h2>From idea to blueprint</h2>
+          <ol class="how" id="hw">
+            <li>
+              <span class="mono">01</span>
+              <h3>Share the idea</h3>
+            </li>
+            <li>
+              <span class="mono">02</span>
+              <h3>Define the requirements</h3>
+            </li>
+            <li>
+              <span class="mono">03</span>
+              <h3>Attach references</h3>
+            </li>
+            <li>
+              <span class="mono">04</span>
+              <h3>Submit the brief</h3>
+            </li>
+            <li>
+              <span class="mono">05</span>
+              <h3>Project review</h3>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section style="padding-top: 20px">
+        <div class="wrap">
+          <h2>What makes a brief useful</h2>
+          <div class="hp2">
+            <div>
+              <h3>PROJECT GOAL</h3>
+              <p>What problem should the software solve?</p>
+            </div>
+            <div>
+              <h3>TARGET USERS</h3>
+              <p>Who will use the application?</p>
+            </div>
+            <div>
+              <h3>CORE FEATURES</h3>
+              <p>What should users be able to do?</p>
+            </div>
+            <div>
+              <h3>REFERENCES</h3>
+              <p>Are there existing products or designs you like?</p>
+            </div>
+            <div>
+              <h3>CONSTRAINTS</h3>
+              <p>Any technical, business or operational requirements?</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding-top: 10px">
+        <div class="wrap">
+          <div class="cta">
+            <h2>Ready to define the blueprint?</h2>
+            <p>
+              Share the idea, requirements and references. The rest starts with
+              a clear brief.
+            </p>
+            <a class="btn p" href="#intake" id="gt">Start a project →</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap fg">
+        <div><b>Tejas Modi</b> · Python Full Stack Developer</div>
+        <div id="ft2">
+          <a href="{% url 'home' %}">Home</a><a href="{% url 'about' %}">About</a
+          ><a href="{% url 'frontend_work' %}">Websites</a><a href="{% url 'backend_projects' %}">Backend</a
+          ><a href="{% url 'contact' %}">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)],
+        RM = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      let ENDPOINT = "{% url 'requirement_submit' %}",
+        DEMO = false;
+      const PROJECT_TYPES = [
+          "Website",
+          "Web Application",
+          "Backend System",
+          "Business Management System",
+          "CRM",
+          "Dashboard",
+          "API / Backend Service",
+          "Portfolio",
+          "E-Commerce",
+          "Custom Software",
+          "Other",
+        ],
+        TECH = [
+          "Python",
+          "Django",
+          "PostgreSQL",
+          "MySQL",
+          "JavaScript",
+          "Bootstrap",
+          "React",
+          "Other",
+        ],
+        UPLOAD = {
+          exts: ["pdf", "doc", "docx", "png", "jpg", "jpeg", "zip"],
+          maxMB: 10,
+          maxFiles: 5,
+        };
+      const STEPS = ["Details", "Overview", "Scope", "Files", "Review"];
+      let cur = 1,
+        maxOk = 1,
+        FILES = [];
+      const nav = $("#nav");
+      addEventListener(
+        "scroll",
+        () => nav.classList.toggle("sc", scrollY > 30),
+        { passive: true },
+      );
+      $("#bg").onclick = (e) => {
+        const o = $("#lk").classList.toggle("o");
+        e.target.setAttribute("aria-expanded", o);
+      };
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          }),
+        { threshold: 0.2 },
+      );
+      $$("#hi,#bp,#hw").forEach((x) => io.observe(x));
+      $("#stp").insertAdjacentHTML(
+        "beforeend",
+        STEPS.map(
+          (s, i) =>
+            `<li><button type="button" data-g="${i + 1}"><b>0${i + 1}</b><span>${s}</span></button></li>`,
+        ).join(""),
+      );
+      $("#pt").innerHTML = PROJECT_TYPES.map(
+        (t) =>
+          `<label class="chip"><input type="radio" name="project_type" value="${t}"><span>${t}</span></label>`,
+      ).join("");
+      $("#tc").innerHTML = TECH.map(
+        (t) =>
+          `<label class="chip"><input type="checkbox" name="preferred_technologies" value="${t}"><span>${t}</span></label>`,
+      ).join("");
+      $("#dzt").textContent =
+        `${UPLOAD.exts.join(", ").toUpperCase()} · up to ${UPLOAD.maxMB} MB each · max ${UPLOAD.maxFiles} files`;
+      $("#fi").accept = UPLOAD.exts.map((e) => "." + e).join(",");
+      const say = (t) => ($("#live").textContent = t);
+      function go(n, focus = true) {
+        cur = n;
+        maxOk = Math.max(maxOk, n);
+        $$(".pn").forEach((p) => (p.hidden = +p.dataset.s !== n));
+        $$("#stp button").forEach((b) => {
+          const i = +b.dataset.g;
+          b.parentElement.className = i < n ? "done" : i === n ? "cur" : "";
+          b.disabled = i > maxOk;
+          b.setAttribute("aria-current", i === n ? "step" : "false");
+        });
+        $("#sf").style.width = `calc((100% - 29px) * ${(n - 1) / 4})`;
+        $$(".bn").forEach((g) => {
+          const i = +g.dataset.n;
+          g.classList.toggle("on", i <= n);
+          g.classList.toggle("cur", i === n);
+        });
+        $$(".an").forEach((a, i) => a.classList.toggle("show", i + 1 === n));
+        $("#bk").hidden = n === 1;
+        $("#nx").hidden = n === 5;
+        $("#sb").hidden = n !== 5;
+        if (n === 5) review();
+        if (focus) {
+          const h = $(`.pn[data-s="${n}"] h2`);
+          h.focus({ preventScroll: true });
+          $("#card").scrollIntoView({
+            behavior: RM ? "auto" : "smooth",
+            block: "start",
+          });
+          say(`Step ${n} of 5: ${STEPS[n - 1]}`);
+        }
+      }
+      const val = (n) => {
+        const E = [];
+        const v = (id) => $("#" + id).value.trim();
+        if (n === 1) {
+          if (!v("cn")) E.push(["cn", "Please enter your full name."]);
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("ce")))
+            E.push(["ce", "Please enter a valid email address."]);
+        }
+        if (n === 2) {
+          if (!v("pn")) E.push(["pn", "Please give the project a name."]);
+          if (!F.project_type.value)
+            E.push(["ept", "Please choose a project type."]);
+          if (!v("pd"))
+            E.push(["pd", "Please describe what you want to build."]);
+        }
+        if (n === 3 && !v("ft"))
+          E.push(["ft", "Please list the main features or modules you need."]);
+        if (n === 4)
+          $$("#lks input").forEach((i, k) => {
+            if (i.value.trim()) {
+              try {
+                if (!/^https?:$/.test(new URL(i.value.trim()).protocol))
+                  throw 0;
+              } catch {
+                E.push([
+                  "lk" + k,
+                  "Please enter a full link starting with https://",
+                ]);
+              }
+            }
+          });
+        return E;
+      };
+      function mark(E, n) {
+        $$(`.pn[data-s="${n}"] .fld,.pn[data-s="${n}"] .fs`).forEach((x) => {
+          x.classList.remove("bad");
+          const i = x.querySelector("input,textarea");
+          i && i.removeAttribute("aria-invalid");
+        });
+        E.forEach(([id, m]) => {
+          const el = $("#" + id);
+          if (!el) return;
+          const box = el.closest(".fld,.fs");
+          box.classList.add("bad");
+          let er = box.querySelector(".er");
+          er.textContent = m;
+          er.style.display = "block";
+          if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+            el.setAttribute("aria-invalid", "true");
+            el.setAttribute("aria-describedby", er.id || (er.id = "e_" + id));
+          }
+        });
+        if (E.length) {
+          const f = $("#" + E[0][0]);
+          f && f.focus && f.focus();
+          say(E[0][1]);
+        }
+        return !E.length;
+      }
+      const F = $("#f");
+      $$(".fld input,.fld textarea").forEach((i) =>
+        i.addEventListener("input", () => {
+          const b = i.closest(".fld");
+          if (b.classList.contains("bad") && i.value.trim()) {
+            b.classList.remove("bad");
+            i.removeAttribute("aria-invalid");
+            b.querySelector(".er").style.display = "";
+          }
+        }),
+      );
+      $$("input[name=project_type]").forEach(
+        (r) =>
+          (r.onchange = () => {
+            $("#ptf").classList.remove("bad");
+            $("#ept").style.display = "";
+          }),
+      );
+      $("#nx").onclick = () => {
+        if (mark(val(cur), cur)) go(cur + 1);
+      };
+      $("#bk").onclick = () => go(cur - 1);
+      $$("#stp button").forEach(
+        (b) =>
+          (b.onclick = () => {
+            const t = +b.dataset.g;
+            if (t < cur || t <= maxOk) go(t);
+          }),
+      );
+      /* links */
+      let nl = 0;
+      function addLink() {
+        if ($$("#lks .lk").length >= 5) return;
+        $("#lks").insertAdjacentHTML(
+          "beforeend",
+          `<div class="lk"><input id="lk${nl}" name="links" type="url" inputmode="url" aria-label="Reference link ${nl + 1}" placeholder="https://example.com (website, Figma, Drive, GitHub…)" maxlength="300"></div>`,
+        );
+        nl++;
+        $("#al").hidden = $$("#lks .lk").length >= 5;
+      }
+      $("#al").onclick = addLink;
+      addLink();
+      /* files */
+      const sz = (b) =>
+        b < 1048576
+          ? Math.max(1, Math.round(b / 1024)) + " KB"
+          : (b / 1048576).toFixed(1) + " MB";
+      function addFiles(list) {
+        const errs = [];
+        [...list].forEach((f) => {
+          const ext = (f.name.split(".").pop() || "").toLowerCase();
+          if (!UPLOAD.exts.includes(ext))
+            errs.push(`${f.name}: this file type is not supported.`);
+          else if (f.size > UPLOAD.maxMB * 1048576)
+            errs.push(`${f.name}: larger than ${UPLOAD.maxMB} MB.`);
+          else if (FILES.length >= UPLOAD.maxFiles)
+            errs.push(
+              `${f.name}: you can attach up to ${UPLOAD.maxFiles} files.`,
+            );
+          else if (!FILES.some((x) => x.name === f.name && x.size === f.size))
+            FILES.push(f);
+        });
+        const e = $("#efl");
+        e.style.display = errs.length ? "block" : "none";
+        e.parentElement.classList.toggle("bad", !!errs.length);
+        e.innerHTML = errs.join("<br>");
+        if (errs.length) say(errs[0]);
+        drawFiles();
+        $("#fi").value = "";
+      }
+      function drawFiles() {
+        $("#fl").innerHTML = FILES.map(
+          (f, i) =>
+            `<li><span class="nm">${f.name.replace(/[<>&"]/g, "")}</span><small>${(f.name.split(".").pop() || "").toUpperCase()} · ${sz(f.size)}</small><button type="button" data-r="${i}" aria-label="Remove ${f.name.replace(/[<>&"]/g, "")}">Remove</button></li>`,
+        ).join("");
+        $$("[data-r]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              FILES.splice(+b.dataset.r, 1);
+              drawFiles();
+            }),
+        );
+      }
+      $("#fi").onchange = (e) => addFiles(e.target.files);
+      const dz = $("#dz");
+      ["dragenter", "dragover"].forEach((t) =>
+        dz.addEventListener(t, (e) => {
+          e.preventDefault();
+          dz.classList.add("dr");
+        }),
+      );
+      ["dragleave", "drop"].forEach((t) =>
+        dz.addEventListener(t, (e) => {
+          e.preventDefault();
+          dz.classList.remove("dr");
+        }),
+      );
+      dz.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
+      /* review */
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      function review() {
+        const v = (id) => $("#" + id).value.trim(),
+          t = [...F.querySelectorAll("[name=preferred_technologies]:checked")]
+            .map((x) => x.value)
+            .join(", "),
+          L = $$("#lks input")
+            .map((i) => i.value.trim())
+            .filter(Boolean);
+        const S = (h, s, rows) =>
+          `<div class="rv"><h3>${h}<button type="button" data-e="${s}">Edit</button></h3><dl>${rows
+            .filter((r) => r[1])
+            .map((r) => `<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`)
+            .join("")}</dl></div>`;
+        $("#rvw").innerHTML =
+          S("Client", 1, [
+            ["Name", v("cn")],
+            ["Email", v("ce")],
+            ["Phone", v("cp")],
+            ["Company", v("cc")],
+          ]) +
+          S("Project", 2, [
+            ["Name", v("pn")],
+            ["Type", F.project_type.value],
+            ["Description", v("pd")],
+          ]) +
+          S("Requirements", 3, [
+            ["Features", v("ft")],
+            ["Technology", t],
+            ["Additional", v("ar")],
+            ["Budget", v("bd")],
+            ["Timeline", v("tl")],
+          ]) +
+          S("References", 4, [["Links", L.join("\n")]]) +
+          S("Files", 4, [
+            [
+              "Attached",
+              FILES.map((f) => `${f.name} (${sz(f.size)})`).join("\n") || "",
+            ],
+          ]);
+        $$("[data-e]").forEach((b) => (b.onclick = () => go(+b.dataset.e)));
+      }
+      /* submit */
+      const prog = (p) => ($("#pbi").style.width = p + "%");
+      function send(fd) {
+        return new Promise((res, rej) => {
+          if (!ENDPOINT) {
+            if (DEMO) {
+              let p = 0;
+              const t = setInterval(() => {
+                p += 14;
+                prog(p);
+                if (p >= 100) {
+                  clearInterval(t);
+                  res({ ok: true });
+                }
+              }, 120);
+              return;
+            }
+            return rej({});
+          }
+          const x = new XMLHttpRequest();
+          x.open("POST", ENDPOINT);
+          x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+          x.upload.onprogress = (e) =>
+            e.lengthComputable && prog((e.loaded / e.total) * 100);
+          x.onload = () => {
+            let j = {};
+            try {
+              j = JSON.parse(x.responseText);
+            } catch {}
+            x.status < 300 && j.ok ? res(j) : rej(j);
+          };
+          x.onerror = () => rej({ net: 1 });
+          x.send(fd);
+        });
+      }
+      F.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (F.website.value) return;
+        for (let n = 1; n <= 4; n++) {
+          const E = val(n);
+          if (E.length) {
+            go(n, false);
+            mark(E, n);
+            return;
+          }
+        }
+        const b = $("#sb");
+        if (b.disabled) return;
+        b.disabled = true;
+        b.textContent = "Submitting…";
+        F.classList.add("sub2");
+        prog(0);
+        say("Submitting project brief");
+        try {
+          const fd = new FormData(F);
+          fd.delete("links");
+          $$("#lks input").forEach(
+            (i) => i.value.trim() && fd.append("links", i.value.trim()),
+          );
+          FILES.forEach((f) => fd.append("files", f, f.name));
+          const j = await send(fd);
+          $("#okm").textContent =
+            j.message || "Your project brief has been received.";
+          F.hidden = true;
+          $("#ok").classList.add("on");
+          $("#ok").focus();
+          say("Project brief received");
+        } catch (x) {
+          $("#bm").textContent =
+            x && x.net
+              ? "Network error. Please check your connection and try again. Your brief is still saved in the form."
+              : ENDPOINT || DEMO
+                ? "Something went wrong on our side. Please try again. Your brief is still saved in the form."
+                : "This prototype is not connected to Django yet, so nothing was sent. Your brief is still saved in the form.";
+          F.hidden = true;
+          $("#bad").classList.add("on");
+          $("#bad").focus();
+          say("Project brief could not be sent");
+        } finally {
+          b.disabled = false;
+          b.textContent = "Submit project brief";
+          F.classList.remove("sub2");
+        }
+      });
+      $("#ty").onclick = () => {
+        $("#bad").classList.remove("on");
+        F.hidden = false;
+        $("#sb").focus();
+      };
+      
+      $("#gt").onclick = () =>
+        setTimeout(() => $("#cn").focus({ preventScroll: true }), 600);
+      if (!RM)
+        addEventListener(
+          "pointermove",
+          (e) => {
+            if (innerWidth > 991)
+              $("#bg2").style.transform =
+                `translate(${(e.clientX / innerWidth - 0.5) * 8}px,${(e.clientY / innerHeight - 0.5) * 8}px)`;
+          },
+          { passive: true },
+        );
+      go(1, false);
+    </script>
+  </body>
+</html>

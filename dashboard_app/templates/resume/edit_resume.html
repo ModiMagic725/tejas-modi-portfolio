@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit resume{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Edit resume</h2>
+    <p class="muted">{{ resume.resume_id }} · {{ resume.title }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'resume' %}"><svg class="ic"><use href="#i-back"/></svg>Back to resumes</a></div>
+</section>
+{% include "resume/_form.html" %}
+{% endblock %}

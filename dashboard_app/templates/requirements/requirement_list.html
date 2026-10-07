@@ -1,0 +1,69 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Project requirements{% endblock %}
+
+{% block content %}
+{# Context: items (Page), q, selected, statuses #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Project requirements</h2>
+    <p class="muted">Project briefs sent from the Start a Project page. Opening a new brief moves it to “Reviewing”.</p>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Filter requirements">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search client, email, company or project" aria-label="Search requirements">
+    </div>
+    <select class="input" name="status" aria-label="Filter by status">
+      <option value="">All statuses</option>
+      {% for value, label in statuses %}<option value="{{ value }}"{% if value == selected %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Filter</button>
+    {% if q or selected %}<a class="btn btn-ghost" href="{% url 'requirement_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if items %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Project</th><th>Client</th><th>Type</th><th>Files</th><th>Received</th><th>Status</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for r in items %}
+        <tr{% if r.status == 'new' %} class="is-new"{% endif %}>
+          <td>
+            <a class="row-link" href="{% url 'view_requirement' r.id %}">{{ r.project_name }}</a>
+            <small>{{ r.requirement_id }}</small>
+          </td>
+          <td>
+            <strong>{{ r.client_name }}</strong>
+            <small>{% if r.company %}{{ r.company }} · {% endif %}<a href="mailto:{{ r.email }}">{{ r.email }}</a></small>
+          </td>
+          <td><span class="chip">{{ r.project_type }}</span></td>
+          <td class="num">{{ r.files.count }}</td>
+          <td class="num">{{ r.created_at|date:"d M Y" }}<small>{{ r.created_at|date:"H:i" }}</small></td>
+          <td><span class="pill st-{{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'view_requirement' r.id %}" title="Open" aria-label="Open {{ r.project_name }}"><svg class="ic"><use href="#i-eye"/></svg></a>
+              <form method="post" action="{% url 'delete_requirement' r.id %}" data-confirm="Delete “{{ r.project_name }}” and its attached files? This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ r.project_name }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=items noun="requirements" %}
+
+  {% elif q or selected %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No requirements match your filter.</p><small><a href="{% url 'requirement_list' %}">Clear the filter</a> to see all of them.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-inbox"/></svg><p>No project requirements yet.</p><small>Briefs from your Start a Project page will appear here.</small></div>
+  {% endif %}
+</section>
+{% endblock %}

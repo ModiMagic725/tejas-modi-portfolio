@@ -1,0 +1,31 @@
+{# Shared by add_skill_category.html and edit_skill_category.html.  Context: category (edit only), form (POST data after a validation error). #}
+<form method="post" class="form-stack" id="categoryForm">
+  {% csrf_token %}
+
+  <section class="card">
+    <header class="card-h"><h3>Category details</h3></header>
+    <div class="form-grid">
+      <div class="field span-2">
+        <label for="name">Category name <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="name" name="name" maxlength="60" required aria-describedby="h-name" placeholder="Languages" value="{% if form %}{{ form.name }}{% else %}{{ category.name }}{% endif %}">
+        <p class="hint" id="h-name">Each category is one row in the Technical arsenal, for example Languages, Backend or Databases.</p>
+      </div>
+      <div class="field">
+        <label for="display_order">Display order</label>
+        <input type="number" id="display_order" name="display_order" min="0" aria-describedby="h-order" value="{% if form %}{{ form.display_order|default:'0' }}{% elif category %}{{ category.display_order }}{% else %}0{% endif %}">
+        <p class="hint" id="h-order">Lower numbers appear first.</p>
+      </div>
+    </div>
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" name="is_published"{% if form %}{% if 'is_published' in form %} checked{% endif %}{% elif category %}{% if category.is_published %} checked{% endif %}{% else %} checked{% endif %}>
+        <span><strong>Published</strong><small>Visible in the Technical arsenal on the About page.</small></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{% url 'skill_category_list' %}">Cancel</a>
+    <button type="submit" class="btn btn-primary">{% if category %}Save changes{% else %}Add category{% endif %}</button>
+  </div>
+</form>

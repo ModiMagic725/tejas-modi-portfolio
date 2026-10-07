@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit skill category{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Edit skill category</h2>
+    <p class="muted">{{ category.name }} · {{ category.skills.count }} sub categor{{ category.skills.count|pluralize:"y,ies" }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'skill_category_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to categories</a></div>
+</section>
+{% include "skills/_category_form.html" %}
+{% endblock %}

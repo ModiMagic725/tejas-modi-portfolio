@@ -1,0 +1,45 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block public %}
+<main class="auth" id="main">
+  <section class="auth-side" aria-hidden="true">
+    <div class="brand light"><span class="brand-mark">TM</span><span><strong>Portfolio</strong><small>Admin dashboard</small></span></div>
+    <div>
+      <h2>Manage your portfolio without touching code.</h2>
+      <p>Add projects, update skills, replace your resume and read client enquiries from one place.</p>
+    </div>
+    <small>Authorised access only.</small>
+  </section>
+
+  <section class="auth-form">
+    <form method="post" class="auth-card" novalidate>
+      {% csrf_token %}
+      <h1>Sign in</h1>
+      <p class="muted">Enter your admin email and password to continue.</p>
+
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert"><span>{{ message }}</span></div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ email|default:'' }}" autocomplete="email" autofocus required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="pw">
+          <input type="password" name="password" id="password" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" aria-pressed="false"><svg class="ic"><use href="#i-eye"/></svg></button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      <a class="back" href="{% url 'home' as u %}{{ u|default:'/' }}">&larr; Back to website</a>
+    </form>
+  </section>
+</main>
+{% endblock %}

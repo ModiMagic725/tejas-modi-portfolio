@@ -1,0 +1,73 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Certificates{% endblock %}
+
+{% block content %}
+{# Context: certificates (Page), q #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Certificates</h2>
+    <p class="muted">Shown in the Certificates list on the About page, with the PDF visitors can open.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_certificate' %}"><svg class="ic"><use href="#i-plus"/></svg>Add certificate</a>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Search certificates">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search name or description" aria-label="Search certificates">
+    </div>
+    <button class="btn btn-primary" type="submit">Search</button>
+    {% if q %}<a class="btn btn-ghost" href="{% url 'certificate_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if certificates %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Certificate</th><th>PDF</th><th>Show on site</th><th>Order</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for c in certificates %}
+        <tr{% if not c.is_published %} class="is-off"{% endif %}>
+          <td>
+            <strong>{{ c.name }}</strong>
+            {% if c.description %}<small>{{ c.description|truncatechars:90 }}</small>{% endif %}
+            <small>{{ c.certificate_id }}</small>
+          </td>
+          <td>
+            {% if c.pdf_file %}<a href="{% url 'certificate_pdf' c.id %}" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true" style="vertical-align:-4px"><use href="#i-file"/></svg> View PDF</a>
+            {% else %}<small>No PDF</small>{% endif %}
+          </td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_certificate_published' c.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ c.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
+            </form>
+          </td>
+          <td class="num">{{ c.display_order }}</td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_certificate' c.id %}" title="Edit" aria-label="Edit {{ c.name }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_certificate' c.id %}" data-confirm="Delete “{{ c.name }}” and its PDF? This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ c.name }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=certificates noun="certificates" %}
+
+  {% elif q %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No certificates match your search.</p><small><a href="{% url 'certificate_list' %}">Clear the search</a> to see all of them.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-file"/></svg><p>No certificates yet.</p><small>Add a certificate with its name, a short description and the PDF.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_certificate' %}"><svg class="ic"><use href="#i-plus"/></svg>Add certificate</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

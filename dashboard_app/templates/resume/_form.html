@@ -1,0 +1,48 @@
+{# Shared by add_resume.html and edit_resume.html.  Context: resume (edit only), form (POST data after an error), has_active (add only) #}
+<form method="post" enctype="multipart/form-data" class="form-stack">
+  {% csrf_token %}
+
+  <section class="card">
+    <header class="card-h"><h3>Resume details</h3></header>
+    <div class="field">
+      <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
+      <input type="text" id="title" name="title" maxlength="120" required placeholder="Python Django Resume" aria-describedby="h-title" value="{% if form %}{{ form.title }}{% else %}{{ resume.title }}{% endif %}">
+      <p class="hint" id="h-title">Also used as the file name when a visitor downloads it.</p>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label for="note">Note</label>
+      <input type="text" id="note" name="note" maxlength="200" placeholder="Updated Oct 2026, for backend roles" aria-describedby="h-note" value="{% if form %}{{ form.note }}{% else %}{{ resume.note }}{% endif %}">
+      <p class="hint" id="h-note">Only you see this. Helps you tell versions apart.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>PDF file</h3></header>
+    {% if resume.pdf_file %}
+    <div class="current">
+      <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+      <span><strong>{{ resume.original_name|default:"resume.pdf" }}</strong><small>{{ resume.file_size|filesizeformat }} · uploaded {{ resume.uploaded_at|date:"d M Y" }} · <a href="{% url 'resume_preview' resume.id %}" target="_blank" rel="noopener">Preview</a></small></span>
+    </div>
+    {% endif %}
+    <div class="field" style="margin-bottom:0">
+      <label for="pdf_file">{% if resume %}Replace PDF{% else %}Resume PDF <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+      <input type="file" id="pdf_file" name="pdf_file" accept=".pdf,application/pdf" {% if not resume %}required{% endif %} aria-describedby="h-pdf">
+      <p class="hint" id="h-pdf">PDF only, up to 20 MB.{% if resume %} Choose a file only if you want to replace the current one.{% endif %}</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Website</h3></header>
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" name="is_active"{% if form %}{% if 'is_active' in form %} checked{% endif %}{% elif resume %}{% if resume.is_active %} checked{% endif %}{% elif not has_active %} checked{% endif %}>
+        <span><strong>Make this the active resume</strong><small>The Download and Preview resume buttons on your Homepage and About page use the active resume. Only one can be active, so the current one is switched off.</small></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{% url 'resume' %}">Cancel</a>
+    <button type="submit" class="btn btn-primary">{% if resume %}Save changes{% else %}Upload resume{% endif %}</button>
+  </div>
+</form>

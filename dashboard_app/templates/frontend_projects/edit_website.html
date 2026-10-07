@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit website{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Edit website</h2>
+    <p class="muted">{{ project.project_id }} · {{ project.title }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'website_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to list</a></div>
+</section>
+{% include "frontend_projects/_form.html" %}
+
+{# Screenshot delete forms live outside the main form (forms cannot be nested). The Remove buttons point at them with form="..." #}
+{% for img in project.images.all %}
+<form id="del-img-{{ img.id }}" method="post" action="{% url 'delete_website_image' img.id %}" data-confirm="Remove this screenshot?" hidden>{% csrf_token %}</form>
+{% endfor %}
+{% endblock %}

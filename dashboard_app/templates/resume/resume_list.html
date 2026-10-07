@@ -1,0 +1,99 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Resume{% endblock %}
+
+{% block content %}
+{# Context: resumes (Page), active_resume #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Resume</h2>
+    <p class="muted">The <strong>active</strong> resume is the one visitors preview and download on your Homepage and About page.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_resume' %}"><svg class="ic"><use href="#i-plus"/></svg>Upload resume</a>
+  </div>
+</section>
+
+{% if active_resume %}
+<section class="card live-resume">
+  <div>
+    <span class="pill st-approved">Live on your website</span>
+    <h3>{{ active_resume.title }}</h3>
+    <p class="muted">{{ active_resume.original_name|default:"resume.pdf" }} · {{ active_resume.file_size|filesizeformat }} · uploaded {{ active_resume.uploaded_at|date:"d M Y" }}</p>
+  </div>
+  <div class="row-actions">
+    <button type="button" class="btn btn-primary" data-resume-preview="{% url 'resume_preview' active_resume.id %}" data-title="{{ active_resume.title }}"><svg class="ic"><use href="#i-eye"/></svg>Preview</button>
+    <a class="btn btn-ghost" href="{% url 'resume_download' %}"><svg class="ic"><use href="#i-download"/></svg>Download</a>
+  </div>
+</section>
+{% else %}
+<div class="notice" role="status" style="margin-bottom:18px">No resume is active. The resume buttons are hidden on your website until you activate one below.</div>
+{% endif %}
+
+<section class="card">
+  {% if resumes %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Resume</th><th>File</th><th>Uploaded</th><th>Show on site</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for r in resumes %}
+        <tr{% if r.is_active %} class="is-new"{% endif %}>
+          <td>
+            <strong>{{ r.title }}</strong>
+            {% if r.note %}<small>{{ r.note }}</small>{% endif %}
+            <small>{{ r.resume_id }}</small>
+          </td>
+          <td>{{ r.original_name|default:"resume.pdf" }}<small>{{ r.file_size|filesizeformat }}</small></td>
+          <td class="num">{{ r.uploaded_at|date:"d M Y" }}<small>{{ r.uploaded_at|date:"H:i" }}</small></td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_resume_active' r.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ r.is_active|yesno:'true,false' }}"><i aria-hidden="true"></i>Active</button>
+            </form>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button type="button" class="btn btn-ghost btn-icon" data-resume-preview="{% url 'resume_preview' r.id %}" data-title="{{ r.title }}" title="Preview" aria-label="Preview {{ r.title }}"><svg class="ic"><use href="#i-eye"/></svg></button>
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_resume' r.id %}" title="Edit" aria-label="Edit {{ r.title }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_resume' r.id %}" data-confirm="Delete “{{ r.title }}”{% if r.is_active %}. It is the active resume, so the resume buttons will be hidden on your website{% endif %}? This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ r.title }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=resumes noun="resumes" %}
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-file"/></svg><p>No resume uploaded yet.</p><small>Upload a PDF and mark it active. It then appears on your Homepage and About page.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_resume' %}"><svg class="ic"><use href="#i-plus"/></svg>Upload resume</a></p>
+  </div>
+  {% endif %}
+</section>
+
+<dialog class="pdf-dialog" id="pdfDialog" aria-labelledby="pdfTitle">
+  <div class="pdf-head"><strong id="pdfTitle">Resume</strong><button type="button" class="btn btn-ghost btn-sm" id="pdfClose">Close</button></div>
+  <iframe id="pdfFrame" title="Resume preview"></iframe>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var dlg = document.getElementById('pdfDialog'), frame = document.getElementById('pdfFrame');
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-resume-preview]');
+      if (!b) return;
+      document.getElementById('pdfTitle').textContent = b.getAttribute('data-title');
+      frame.src = b.getAttribute('data-resume-preview');
+      dlg.showModal();
+    });
+    function close() { dlg.close(); frame.removeAttribute('src'); }
+    document.getElementById('pdfClose').addEventListener('click', close);
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+    dlg.addEventListener('cancel', function () { frame.removeAttribute('src'); });
+  })();
+</script>
+{% endblock %}

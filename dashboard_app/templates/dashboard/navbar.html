@@ -1,0 +1,25 @@
+{# Context: page_title (string), optional breadcrumb block via `crumb` #}
+{% url 'home' as u_site %}
+<header class="topbar">
+  <button type="button" class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
+  <div class="crumbs">
+    <span class="crumb-root">Admin</span><span class="crumb-sep" aria-hidden="true">/</span>
+    <h1 class="crumb-title">{{ page_title|default:"Dashboard" }}</h1>
+  </div>
+  <div class="top-actions">
+    <a class="btn btn-ghost btn-sm" href="{{ u_site|default:'/' }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-ext"/></svg><span class="hide-sm">View site</span></a>
+    <details class="user-menu">
+      <summary aria-label="Account menu">
+        <span class="avatar">{{ session_user_name|slice:":1"|upper }}</span>
+        <span class="user-name hide-sm">{{ session_user_name }}</span>
+      </summary>
+      <div class="menu">
+        <div class="menu-head"><strong>{{ session_user_name }}</strong><small>{{ session_user_email|default:"Administrator" }}</small></div>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="menu-item"><svg class="ic"><use href="#i-logout"/></svg>Sign out</button>
+        </form>
+      </div>
+    </details>
+  </div>
+</header>

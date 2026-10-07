@@ -1,0 +1,56 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Message from {{ item.name }}{% endblock %}
+
+{% block content %}
+{# Context: item, statuses #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">{{ item.subject|default:"(no subject)" }}</h2>
+    <p class="muted">From {{ item.name }} · {{ item.created_at|date:"d M Y, H:i" }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'message_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to list</a></div>
+</section>
+
+<div class="detail">
+  <section class="card">
+    <header class="card-h"><h3>Message</h3><span class="pill st-{{ item.status }}">{{ item.get_status_display }}</span></header>
+    <p class="msg-body">{{ item.message|linebreaksbr }}</p>
+    <div class="reply-row">
+      <a class="btn btn-primary" href="mailto:{{ item.email }}?subject=Re: {{ item.subject|default:'Your message'|urlencode }}"><svg class="ic"><use href="#i-mail"/></svg>Reply by email</a>
+    </div>
+  </section>
+
+  <aside class="side-stack">
+    <section class="card">
+      <header class="card-h"><h3>Sender</h3></header>
+      <dl class="kv">
+        <dt>Name</dt><dd>{{ item.name }}</dd>
+        <dt>Email</dt><dd><a href="mailto:{{ item.email }}">{{ item.email }}</a></dd>
+        {% if item.project_type %}<dt>Looking for</dt><dd>{{ item.project_type }}</dd>{% endif %}
+        <dt>Received</dt><dd>{{ item.created_at|date:"d M Y, H:i" }}</dd>
+        {% if item.read_at %}<dt>First read</dt><dd>{{ item.read_at|date:"d M Y, H:i" }}</dd>{% endif %}
+      </dl>
+    </section>
+
+    <section class="card">
+      <header class="card-h"><h3>Status</h3></header>
+      <form method="post" class="form-stack" style="max-width:none">
+        {% csrf_token %}
+        <div class="field">
+          <label for="status">Mark as</label>
+          <select id="status" name="status" class="input">
+            {% for value, label in statuses %}<option value="{{ value }}"{% if value == item.status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Update status</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <form method="post" action="{% url 'delete_message' item.id %}" data-confirm="Delete the message from {{ item.name }}? This cannot be undone.">{% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-block"><svg class="ic"><use href="#i-trash"/></svg>Delete message</button>
+      </form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

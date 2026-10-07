@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Skill categories{% endblock %}
+
+{% block content %}
+{# Context: categories (annotated with skill_count) #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Skill categories</h2>
+    <p class="muted">Each category is one row in the Technical arsenal on the About page, such as Languages, Backend or Databases.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_skill_category' %}"><svg class="ic"><use href="#i-plus"/></svg>Add category</a>
+  </div>
+</section>
+
+<section class="card">
+  {% if categories %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Category</th><th>Sub categories</th><th>Show on site</th><th>Order</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for c in categories %}
+        <tr{% if not c.is_published %} class="is-off"{% endif %}>
+          <td><strong>{{ c.name }}</strong></td>
+          <td>
+            {{ c.skill_count }} item{{ c.skill_count|pluralize }}
+            <small><a href="{% url 'add_skill' %}?category={{ c.id }}">Add sub category</a></small>
+          </td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_skill_category_published' c.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ c.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
+            </form>
+          </td>
+          <td class="num">{{ c.display_order }}</td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_skill_category' c.id %}" title="Edit" aria-label="Edit {{ c.name }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_skill_category' c.id %}" data-confirm="Delete the category “{{ c.name }}” and all {{ c.skill_count }} sub categor{{ c.skill_count|pluralize:'y,ies' }} inside it? This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ c.name }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-bolt"/></svg><p>No categories yet.</p>
+    <small>Start with a category such as “Languages”, “Backend” or “Databases”. Then add sub categories inside it.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_skill_category' %}"><svg class="ic"><use href="#i-plus"/></svg>Add category</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

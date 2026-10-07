@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit experience{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Edit experience</h2>
+    <p class="muted">{{ experience.experience_id }} · {{ experience.role }} at {{ experience.company }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'experience_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to list</a></div>
+</section>
+{% include "experience/_form.html" %}
+{% endblock %}

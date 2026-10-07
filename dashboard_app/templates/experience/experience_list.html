@@ -1,0 +1,71 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Experience{% endblock %}
+
+{% block content %}
+{# Context: experiences (Page), q #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Experience</h2>
+    <p class="muted">Each published entry is a line in the About page timeline. Newest first.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_experience' %}"><svg class="ic"><use href="#i-plus"/></svg>Add experience</a>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Search experience">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search role, company or technology" aria-label="Search experience">
+    </div>
+    <button class="btn btn-primary" type="submit">Search</button>
+    {% if q %}<a class="btn btn-ghost" href="{% url 'experience_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if experiences %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Role</th><th>Period</th><th>Technologies</th><th>Show on site</th><th>Order</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for e in experiences %}
+        <tr{% if not e.is_published %} class="is-off"{% endif %}>
+          <td>
+            <strong>{{ e.role }}</strong>
+            <small>{{ e.company }}{% if e.location %} · {{ e.location }}{% endif %}</small>
+            <small>{{ e.experience_id }}</small>
+          </td>
+          <td class="num">{{ e.period_display }}{% if e.is_current %}<small>Current role</small>{% endif %}</td>
+          <td>{% if e.tech_list %}<div class="chips">{% for t in e.tech_list %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% else %}<small>None added</small>{% endif %}</td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_experience_published' e.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ e.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
+            </form>
+          </td>
+          <td class="num">{{ e.display_order }}</td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_experience' e.id %}" title="Edit" aria-label="Edit {{ e.role }} at {{ e.company }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_experience' e.id %}" data-confirm="Delete “{{ e.role }} at {{ e.company }}”? It disappears from the About page. This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ e.role }} at {{ e.company }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=experiences noun="entries" %}
+
+  {% elif q %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No entries match your search.</p><small><a href="{% url 'experience_list' %}">Clear the search</a> to see all entries.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-user"/></svg><p>No experience added yet.</p><small>Add your first role. It appears in the About page timeline once published.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_experience' %}"><svg class="ic"><use href="#i-plus"/></svg>Add experience</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

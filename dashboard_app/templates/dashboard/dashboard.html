@@ -1,0 +1,81 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{# Expected context: stats{websites,backend,skills,messages_new,requirements_new}, recent_messages, recent_requirements, active_resume #}
+{% url 'add_website' as u_add_web %}
+{% url 'add_backend' as u_add_be %}
+{% url 'resume' as u_resume %}
+{% url 'website_list' as u_websites %}
+{% url 'backend_list' as u_backend %}
+{% url 'skills' as u_skills %}
+{% url 'message_list' as u_messages %}
+{% url 'requirement_list' as u_reqs %}
+
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Welcome back, {{ session_user_name }}</h2>
+    <p class="muted">{% now "l, j F Y" %}. Here is what needs your attention.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{{ u_add_web|default:'#' }}"><svg class="ic"><use href="#i-plus"/></svg>Add website</a>
+    <a class="btn btn-ghost" href="{{ u_add_be|default:'#' }}"><svg class="ic"><use href="#i-plus"/></svg>Add backend project</a>
+  </div>
+</section>
+
+<section class="stats" aria-label="Summary">
+  <a class="stat" href="{{ u_websites|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-globe"/></svg></span><span class="stat-n">{{ stats.websites|default:0 }}</span><span class="stat-l">Website projects</span></a>
+  <a class="stat" href="{{ u_backend|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-server"/></svg></span><span class="stat-n">{{ stats.backend|default:0 }}</span><span class="stat-l">Backend projects</span></a>
+  <a class="stat" href="{{ u_skills|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-bolt"/></svg></span><span class="stat-n">{{ stats.skills|default:0 }}</span><span class="stat-l">Skills</span></a>
+  <a class="stat {% if stats.messages_new %}hot{% endif %}" href="{{ u_messages|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-mail"/></svg></span><span class="stat-n">{{ stats.messages_new|default:0 }}</span><span class="stat-l">New messages</span></a>
+  <a class="stat {% if stats.requirements_new %}hot{% endif %}" href="{{ u_reqs|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-inbox"/></svg></span><span class="stat-n">{{ stats.requirements_new|default:0 }}</span><span class="stat-l">New requirements</span></a>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <header class="card-h"><h3>Recent messages</h3><a href="{{ u_messages|default:'#' }}">View all</a></header>
+    {% if recent_messages %}
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for m in recent_messages %}
+        <tr>
+          <td><strong>{{ m.name }}</strong><small>{{ m.email }}</small></td>
+          <td>{{ m.subject|default:"(no subject)"|truncatechars:34 }}</td>
+          <td>{{ m.created_at|date:"d M" }}</td>
+          <td><span class="pill st-{{ m.status|lower }}">{{ m.get_status_display }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty"><svg class="ic"><use href="#i-mail"/></svg><p>No messages yet.</p><small>Messages from your contact form will appear here.</small></div>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Recent project requirements</h3><a href="{{ u_reqs|default:'#' }}">View all</a></header>
+    {% if recent_requirements %}
+    <ul class="list">
+      {% for r in recent_requirements %}
+      <li>
+        <div><strong>{{ r.project_name }}</strong><small>{{ r.client_name }}{% if r.company %} · {{ r.company }}{% endif %}</small></div>
+        <div class="right"><span class="pill st-{{ r.status|lower }}">{{ r.get_status_display }}</span><small>{{ r.created_at|date:"d M" }}</small></div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty"><svg class="ic"><use href="#i-inbox"/></svg><p>No project requirements yet.</p><small>Client briefs from the Start a Project page will appear here.</small></div>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <header class="card-h"><h3>Resume</h3><a href="{{ u_resume|default:'#' }}">Manage</a></header>
+  {% if active_resume %}
+    <p class="muted">Active resume: <strong>{{ active_resume.title }}</strong>, uploaded {{ active_resume.uploaded_at|date:"d M Y" }}.</p>
+  {% else %}
+    <div class="notice">No active resume. The Download Resume buttons on your site stay hidden until you upload one and mark it active.</div>
+  {% endif %}
+</section>
+{% endblock %}

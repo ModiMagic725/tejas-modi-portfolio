@@ -1,0 +1,100 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Website projects{% endblock %}
+
+{% block content %}
+{# Context: projects (Page), q, selected, categories #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Website projects</h2>
+    <p class="muted">Frontend work shown on the Websites page. Switch a project off to hide it from the public site.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_website' %}"><svg class="ic"><use href="#i-plus"/></svg>Add website</a>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Filter website projects">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search title, description or technology" aria-label="Search website projects">
+    </div>
+    <select class="input" name="category" aria-label="Filter by category">
+      <option value="">All categories</option>
+      {% for value, label in categories %}<option value="{{ value }}"{% if value == selected %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Filter</button>
+    {% if q or selected %}<a class="btn btn-ghost" href="{% url 'website_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if projects %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Project</th><th>Category</th><th>Technologies</th><th>Show on site</th><th>Order</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for p in projects %}
+        <tr{% if not p.is_published %} class="is-off"{% endif %}>
+          <td>
+            <div class="proj">
+              {% if p.thumbnail %}
+                <img class="thumb" src="{{ p.thumbnail.url }}" alt="" width="72" height="48" loading="lazy">
+              {% else %}
+                <span class="thumb thumb-ph" aria-hidden="true"><svg class="ic"><use href="#i-image"/></svg></span>
+              {% endif %}
+              <div>
+                <strong>{{ p.title }}</strong>
+                <small>{{ p.project_id }}{% if p.year %} · {{ p.year }}{% endif %}</small>
+                {% if p.live_url %}
+                  <small><a href="{{ p.live_url }}" target="_blank" rel="noopener noreferrer">{{ p.live_url|truncatechars:38 }}</a></small>
+                {% else %}
+                  <small>No live link</small>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td><span class="pill">{{ p.get_category_display }}</span></td>
+          <td>
+            {% if p.tech_list %}<div class="chips">{% for t in p.tech_list %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% else %}<small>None added</small>{% endif %}
+          </td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_website_published' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
+            </form>
+            <form class="tg-form" method="post" action="{% url 'toggle_website_featured' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.is_featured|yesno:'true,false' }}"><i aria-hidden="true"></i>Featured</button>
+            </form>
+            {% if p.github_url %}
+            <form class="tg-form" method="post" action="{% url 'toggle_website_github' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.show_github|yesno:'true,false' }}"><i aria-hidden="true"></i>GitHub link</button>
+            </form>
+            {% else %}
+              <p class="tg-none">No GitHub link</p>
+            {% endif %}
+          </td>
+          <td class="num">{{ p.display_order }}</td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_website' p.id %}" title="Edit" aria-label="Edit {{ p.title }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_website' p.id %}" data-confirm="Delete “{{ p.title }}”? Its screenshots are removed too. This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ p.title }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=projects noun="projects" %}
+
+  {% elif q or selected %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No projects match your filter.</p><small><a href="{% url 'website_list' %}">Clear the filter</a> to see all projects.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-globe"/></svg><p>No website projects yet.</p><small>Add your first website. It appears on the public site once it is published.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_website' %}"><svg class="ic"><use href="#i-plus"/></svg>Add website</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

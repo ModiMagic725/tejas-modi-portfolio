@@ -1,0 +1,109 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ item.project_name }}{% endblock %}
+
+{% block content %}
+{# Context: item, statuses #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">{{ item.project_name }}</h2>
+    <p class="muted">{{ item.requirement_id }} · {{ item.project_type }} · received {{ item.created_at|date:"d M Y, H:i" }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'requirement_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to list</a></div>
+</section>
+
+<div class="detail">
+  <div class="side-stack">
+    <section class="card">
+      <header class="card-h"><h3>Project description</h3></header>
+      <p class="msg-body">{{ item.project_description|linebreaksbr }}</p>
+    </section>
+
+    <section class="card">
+      <header class="card-h"><h3>Core features / modules</h3></header>
+      <p class="msg-body">{{ item.features|linebreaksbr }}</p>
+    </section>
+
+    {% if item.additional_requirements %}
+    <section class="card">
+      <header class="card-h"><h3>Additional requirements</h3></header>
+      <p class="msg-body">{{ item.additional_requirements|linebreaksbr }}</p>
+    </section>
+    {% endif %}
+
+    <section class="card">
+      <header class="card-h"><h3>References and files</h3></header>
+      <h4 class="sub-h">Reference links</h4>
+      {% if item.links.all %}
+        <ul class="files">
+          {% for l in item.links.all %}
+          <li><svg class="ic" aria-hidden="true"><use href="#i-link"/></svg><a href="{{ l.url }}" target="_blank" rel="noopener noreferrer nofollow">{{ l.url|truncatechars:70 }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}<p class="muted">No links provided.</p>{% endif %}
+
+      <h4 class="sub-h">Attached files</h4>
+      {% if item.files.all %}
+        <ul class="files">
+          {% for f in item.files.all %}
+          <li>
+            <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+            <span>{{ f.original_name }}<small>{{ f.file_size|filesizeformat }} · uploaded {{ f.uploaded_at|date:"d M Y" }}</small></span>
+            <a class="btn btn-ghost btn-sm" href="{% url 'download_requirement_file' f.id %}"><svg class="ic"><use href="#i-download"/></svg>Download</a>
+          </li>
+          {% endfor %}
+        </ul>
+        <p class="doc-note">Files are private. Only a signed-in admin can download them. Open files from unknown clients with care.</p>
+      {% else %}<p class="muted">No files attached.</p>{% endif %}
+    </section>
+  </div>
+
+  <aside class="side-stack">
+    <section class="card">
+      <header class="card-h"><h3>Client</h3><span class="pill st-{{ item.status }}">{{ item.get_status_display }}</span></header>
+      <dl class="kv">
+        <dt>Name</dt><dd>{{ item.client_name }}</dd>
+        <dt>Email</dt><dd><a href="mailto:{{ item.email }}">{{ item.email }}</a></dd>
+        {% if item.phone %}<dt>Phone</dt><dd>{{ item.phone }}</dd>{% endif %}
+        {% if item.company %}<dt>Company</dt><dd>{{ item.company }}</dd>{% endif %}
+      </dl>
+      <div class="reply-row"><a class="btn btn-primary btn-block" href="mailto:{{ item.email }}?subject=Re: {{ item.project_name|urlencode }}"><svg class="ic"><use href="#i-mail"/></svg>Email client</a></div>
+    </section>
+
+    <section class="card">
+      <header class="card-h"><h3>Client preferences</h3></header>
+      <dl class="kv">
+        <dt>Technologies</dt><dd>{% if item.preferred_technologies %}{{ item.preferred_technologies }}{% else %}Not specified{% endif %}</dd>
+        <dt>Budget</dt><dd>{{ item.budget_range|default:"Not specified" }}</dd>
+        <dt>Timeline</dt><dd>{{ item.desired_timeline|default:"Not specified" }}</dd>
+      </dl>
+      <p class="doc-note">Technology choices are the client's preference, not a commitment.</p>
+    </section>
+
+    <section class="card">
+      <header class="card-h"><h3>Status and notes</h3></header>
+      <form method="post" class="form-stack" style="max-width:none">
+        {% csrf_token %}
+        <div class="field">
+          <label for="status">Status</label>
+          <select id="status" name="status" class="input">
+            {% for value, label in statuses %}<option value="{{ value }}"{% if value == item.status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="internal_notes">Internal notes</label>
+          <textarea id="internal_notes" name="internal_notes" rows="5" class="input" aria-describedby="h-notes">{{ item.internal_notes }}</textarea>
+          <p class="hint" id="h-notes">Only you can see these. The client never does.</p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save</button>
+      </form>
+      <p class="doc-note">Last updated {{ item.updated_at|date:"d M Y, H:i" }}</p>
+    </section>
+
+    <section class="card">
+      <form method="post" action="{% url 'delete_requirement' item.id %}" data-confirm="Delete “{{ item.project_name }}” and its attached files? This cannot be undone.">{% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-block"><svg class="ic"><use href="#i-trash"/></svg>Delete requirement</button>
+      </form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>About Tejas Modi · Python Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Tejas Modi is a Python full stack developer in Ranchi building Django management systems with role-based dashboards, workflow automation and MySQL or PostgreSQL databases."
+    />
+    <meta
+      property="og:title"
+      content="About Tejas Modi · Python Full Stack Developer"
+    />
+    <meta property="og:type" content="profile" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7f5f0;
+        --wh: #fff;
+        --ac: #c2410c;
+        --tx: #1f2937;
+        --mut: #5b6472;
+        --bd: rgba(31, 41, 55, 0.12);
+        --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 80px;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font:
+          400 16.5px/1.7 "DM Sans",
+          system-ui,
+          sans-serif;
+        overflow-x: hidden;
+        background-image: radial-gradient(
+          rgba(31, 41, 55, 0.07) 1px,
+          transparent 1px
+        );
+        background-size: 26px 26px;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: Fraunces, Georgia, serif;
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      :focus-visible {
+        outline: 2px solid var(--ac);
+        outline-offset: 3px;
+      }
+      .wrap {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      section {
+        padding: 104px 0;
+        position: relative;
+      }
+      h2 {
+        font-size: clamp(2rem, 4.4vw, 3.2rem);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .lead {
+        color: var(--mut);
+        max-width: 58ch;
+        margin: 0 0 48px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        border: 1px solid var(--tx);
+        background: transparent;
+        color: var(--tx);
+        font: 500 0.95rem "DM Sans";
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          color 0.3s,
+          border-color 0.3s,
+          transform 0.3s var(--ease);
+      }
+      .btn span {
+        transition: transform 0.3s var(--ease);
+      }
+      .btn:hover {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #fff;
+      }
+      .btn:hover span {
+        transform: translateX(4px);
+      }
+      .btn.p {
+        background: var(--tx);
+        color: #fff;
+      }
+      .btn[aria-disabled="true"] {
+        opacity: 0.45;
+        pointer-events: none;
+      }
+      .mk {
+        clip-path: inset(0 0 100% 0);
+        transform: translateY(0.45em);
+        transition:
+          clip-path 0.9s var(--ease),
+          transform 0.9s var(--ease);
+      }
+      .mk.in {
+        clip-path: inset(-5% 0 -25% 0);
+        transform: none;
+      }
+      .sl {
+        opacity: 0;
+        transform: translateX(-26px);
+        transition:
+          opacity 0.8s var(--ease),
+          transform 0.8s var(--ease);
+      }
+      .sl.in {
+        opacity: 1;
+        transform: none;
+      }
+      nav {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        padding-top: env(safe-area-inset-top, 0px);
+        border-bottom: 1px solid transparent;
+        transition:
+          background 0.4s,
+          backdrop-filter 0.4s,
+          border-color 0.4s;
+      }
+      nav.sc {
+        background: rgba(247, 245, 240, 0.78);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-color: var(--bd);
+      }
+      nav .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 68px;
+      }
+      .logo {
+        font: 800 1.2rem Fraunces;
+      }
+      .logo i {
+        color: var(--ac);
+        font-style: normal;
+      }
+      .links {
+        display: flex;
+        gap: 26px;
+        align-items: center;
+      }
+      .links a:not(.btn) {
+        font-size: 0.93rem;
+        color: var(--mut);
+        position: relative;
+        padding: 4px 0;
+      }
+      .links a:not(.btn):after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 2px;
+        width: 100%;
+        background: var(--ac);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s var(--ease);
+      }
+      .links a:hover:after,
+      .links a[aria-current]:after {
+        transform: scaleX(1);
+      }
+      .links a:hover,
+      .links a[aria-current] {
+        color: var(--tx);
+      }
+      .burger {
+        display: none;
+        background: none;
+        border: 0;
+        font-size: 1.6rem;
+        color: var(--tx);
+        cursor: pointer;
+      }
+      /* intro */
+      #intro {
+        padding: 150px 0 90px;
+        overflow: hidden;
+      }
+      .big {
+        position: absolute;
+        right: -1%;
+        top: 70px;
+        font: 800 clamp(8rem, 26vw, 22rem)/1 Fraunces;
+        color: rgba(31, 41, 55, 0.045);
+        pointer-events: none;
+        user-select: none;
+        will-change: transform;
+      }
+      #intro .wrap {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 56px;
+        align-items: end;
+        position: relative;
+      }
+      .meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--mut);
+        font-size: 0.88rem;
+        margin-bottom: 26px;
+      }
+      .meta:before {
+        content: "";
+        width: 3px;
+        height: 44px;
+        background: var(--ac);
+      }
+      h1 {
+        font-size: clamp(2.7rem, 6.6vw, 5.4rem);
+        font-weight: 800;
+        margin-bottom: 28px;
+      }
+      .intro p {
+        color: var(--mut);
+        max-width: 50ch;
+        margin: 0 0 30px;
+        font-size: 1.1rem;
+      }
+      .id {
+        background: var(--wh);
+        border: 1px solid var(--bd);
+        border-radius: 6px 28px 6px 28px;
+        padding: 28px;
+        box-shadow: 0 30px 60px -36px rgba(31, 41, 55, 0.35);
+      }
+      .id dl {
+        margin: 0;
+      }
+      .id dt {
+        font-size: 0.8rem;
+        color: var(--ac);
+        font-weight: 700;
+        margin-top: 16px;
+      }
+      .id dt:first-child {
+        margin-top: 0;
+      }
+      .id dd {
+        margin: 2px 0 0;
+        font-family: Fraunces;
+        font-size: 1.1rem;
+      }
+      .id .ph {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--tx);
+        color: var(--bg);
+        display: grid;
+        place-items: center;
+        font: 600 1.4rem Fraunces;
+        margin-bottom: 20px;
+      }
+      .id .ln {
+        display: flex;
+        gap: 16px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--bd);
+        font-size: 0.92rem;
+      }
+      .id .ln a {
+        border-bottom: 1px solid var(--bd);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+      .id .ln a:hover {
+        color: var(--ac);
+        border-color: var(--ac);
+      }
+      /* orbit */
+      .orb {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 40px;
+        align-items: center;
+      }
+      .stage {
+        position: relative;
+        height: min(520px, 92vw);
+        background: var(--wh);
+        border: 1px solid var(--bd);
+        border-radius: 28px;
+        overflow: hidden;
+      }
+      #gl {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .lb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translate(-999px, 0);
+        background: var(--bg);
+        border: 1px solid var(--bd);
+        border-radius: 99px;
+        padding: 3px 12px;
+        font: 500 0.8rem "DM Sans";
+        color: var(--tx);
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          color 0.3s,
+          border-color 0.3s;
+      }
+      .lb:hover,
+      .lb.on {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #fff;
+      }
+      .pn {
+        border-left: 3px solid var(--ac);
+        padding: 4px 0 4px 20px;
+        min-height: 110px;
+      }
+      .pn h3 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+      }
+      .pn p {
+        margin: 0;
+        color: var(--mut);
+      }
+      /* journey */
+      .tl {
+        position: relative;
+        padding-left: 56px;
+        max-width: 860px;
+      }
+      .tl:before,
+      .tl .fill {
+        content: "";
+        position: absolute;
+        left: 11px;
+        top: 8px;
+        width: 2px;
+      }
+      .tl:before {
+        bottom: 8px;
+        background: var(--bd);
+      }
+      .tl .fill {
+        height: 0;
+        background: var(--ac);
+      }
+      .it {
+        position: relative;
+        margin-bottom: 26px;
+        background: var(--wh);
+        border: 1px solid var(--bd);
+        border-radius: 16px;
+        padding: 26px 28px;
+        transition:
+          box-shadow 0.4s,
+          border-color 0.4s,
+          opacity 0.5s;
+        opacity: 0.55;
+      }
+      .it.act {
+        opacity: 1;
+      }
+      .it.open {
+        border-color: var(--ac);
+        box-shadow: 0 24px 50px -30px rgba(194, 65, 12, 0.45);
+      }
+      .it:before {
+        content: "";
+        position: absolute;
+        left: -52px;
+        top: 30px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--bd);
+        transition: all 0.45s var(--ease);
+      }
+      .it.act:before {
+        background: var(--ac);
+        border-color: var(--ac);
+        transform: scale(1.35);
+      }
+      .it .d {
+        font-size: 0.85rem;
+        color: var(--ac);
+        font-weight: 700;
+      }
+      .it h3 {
+        font-size: 1.45rem;
+        margin: 4px 0;
+      }
+      .it .co {
+        color: var(--mut);
+        margin: 0;
+      }
+      .ex {
+        margin-top: 16px;
+        background: none;
+        border: 0;
+        padding: 0;
+        color: var(--tx);
+        font: 700 0.88rem "DM Sans";
+        cursor: pointer;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .ex b {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border: 1px solid var(--tx);
+        border-radius: 50%;
+        transition: all 0.3s;
+      }
+      .ex:hover b,
+      .open .ex b {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #fff;
+      }
+      .det {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.5s var(--ease);
+      }
+      .det > div {
+        overflow: hidden;
+      }
+      .open .det {
+        grid-template-rows: 1fr;
+      }
+      .det p {
+        margin: 16px 0 12px;
+        color: var(--mut);
+      }
+      .tg {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding-bottom: 2px;
+      }
+      .tg i {
+        font-style: normal;
+        font-size: 0.8rem;
+        padding: 2px 11px;
+        border: 1px solid var(--bd);
+        border-radius: 99px;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: all 0.4s var(--ease);
+      }
+      .open .tg i {
+        opacity: 1;
+        transform: none;
+      }
+      .open .tg i:nth-child(2) {
+        transition-delay: 0.06s;
+      }
+      .open .tg i:nth-child(3) {
+        transition-delay: 0.12s;
+      }
+      .open .tg i:nth-child(4) {
+        transition-delay: 0.18s;
+      }
+      /* capabilities */
+      .cg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .cap {
+        position: relative;
+        padding: 26px 6px 26px 0;
+        border-top: 1px solid var(--bd);
+        transition: transform 0.4s var(--ease);
+      }
+      .cap:before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 0;
+        height: 2px;
+        width: 0;
+        background: var(--ac);
+        transition: width 0.5s var(--ease);
+      }
+      .cap:hover:before {
+        width: 100%;
+      }
+      .cap:hover {
+        transform: translateY(-4px);
+      }
+      .cap .n {
+        font: 600 2.4rem Fraunces;
+        color: rgba(31, 41, 55, 0.2);
+        transition: color 0.3s;
+      }
+      .cap:hover .n {
+        color: var(--ac);
+      }
+      .cap h3 {
+        font-size: 1.3rem;
+        margin: 6px 0 8px;
+      }
+      .cap p {
+        margin: 0 0 12px;
+        color: var(--mut);
+        font-size: 0.95rem;
+      }
+      .cap .tg i {
+        opacity: 0;
+      }
+      .cap:hover .tg i {
+        opacity: 1;
+        transform: none;
+      }
+      /* arsenal */
+      .ars {
+        border-top: 2px solid var(--tx);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 24px;
+        padding: 22px 0;
+        border-bottom: 1px solid var(--bd);
+      }
+      .row h3 {
+        font-size: 1.15rem;
+      }
+      .row .tg i {
+        opacity: 1;
+        transform: none;
+        background: var(--wh);
+        font-size: 0.9rem;
+        padding: 4px 14px;
+        cursor: default;
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+      .row .tg i:hover {
+        border-color: var(--ac);
+        color: var(--ac);
+      }
+      /* education */
+      .path {
+        display: flex;
+        align-items: flex-start;
+        position: relative;
+        margin-top: 20px;
+      }
+      .path:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 11px;
+        height: 2px;
+        background: var(--ac);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 1.4s var(--ease);
+      }
+      .path.in:before {
+        transform: scaleX(1);
+      }
+      .st {
+        flex: 1;
+        position: relative;
+        padding-top: 40px;
+        padding-right: 20px;
+      }
+      .st:before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--ac);
+      }
+      .st .d {
+        font-size: 0.85rem;
+        color: var(--ac);
+        font-weight: 700;
+      }
+      .st h3 {
+        font-size: 1.25rem;
+        margin: 2px 0 4px;
+      }
+      .st p {
+        margin: 0;
+        color: var(--mut);
+        font-size: 0.95rem;
+      }
+      .cert {
+        margin-top: 36px;
+        color: var(--mut);
+      }
+      .cert b {
+        color: var(--tx);
+      }
+      /* how */
+      .how {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+      }
+      .how div {
+        padding: 6px 28px 6px 0;
+        border-right: 1px solid var(--bd);
+        margin-right: 28px;
+      }
+      .how div:last-child {
+        border: 0;
+        margin: 0;
+      }
+      .how h3 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+      .how .n {
+        font: 600 0.9rem Fraunces;
+        color: var(--ac);
+      }
+      .how p {
+        color: var(--mut);
+        margin: 0;
+      }
+      .bc {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        margin-top: 70px;
+        padding-top: 34px;
+        border-top: 2px solid var(--tx);
+      }
+      .bc h3 {
+        font-size: 1.15rem;
+        margin-bottom: 6px;
+      }
+      .bc p {
+        margin: 0;
+        color: var(--mut);
+        font-size: 0.95rem;
+      }
+      /* resume */
+      .rs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .paper {
+        position: relative;
+        background: var(--wh);
+        border: 1px solid var(--bd);
+        border-radius: 6px;
+        padding: 40px 36px;
+        max-width: 380px;
+        aspect-ratio: 3/4;
+        cursor: pointer;
+        box-shadow: 0 20px 40px -26px rgba(31, 41, 55, 0.4);
+        transition:
+          transform 0.5s var(--ease),
+          box-shadow 0.5s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font: inherit;
+        text-align: left;
+        color: var(--tx);
+      }
+      .paper:hover,
+      .paper:focus-visible {
+        transform: translateY(-10px) rotate(-1deg);
+        box-shadow: 0 40px 60px -30px rgba(31, 41, 55, 0.5);
+      }
+      .paper:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 28px;
+        width: 12px;
+        height: 0;
+        background: var(--ac);
+        transition: height 0.4s var(--ease);
+      }
+      .paper:hover:before {
+        height: 44px;
+      }
+      .paper h3 {
+        font-size: 1.8rem;
+      }
+      .paper small {
+        color: var(--ac);
+        font-weight: 700;
+      }
+      .paper i {
+        display: block;
+        height: 6px;
+        background: var(--bd);
+        margin-top: 10px;
+        border-radius: 3px;
+      }
+      .paper i:nth-child(2) {
+        width: 80%;
+      }
+      .paper i:nth-child(3) {
+        width: 60%;
+      }
+      dialog {
+        width: min(900px, 94vw);
+        height: min(86vh, 900px);
+        border: 0;
+        border-radius: 14px;
+        padding: 0;
+        background: var(--wh);
+        color: var(--tx);
+        overflow: hidden;
+      }
+      dialog[open] {
+        display: flex;
+        flex-direction: column;
+      }
+      dialog::backdrop {
+        background: rgba(31, 41, 55, 0.55);
+      }
+      dialog .hd {
+        flex: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--bd);
+      }
+      dialog #dc {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+      }
+      dialog iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+      dialog .em {
+        padding: 40px;
+        color: var(--mut);
+      }
+      /* cta */
+      .cta {
+        background: var(--tx);
+        color: var(--bg);
+        border-radius: 32px;
+        padding: 80px 40px;
+        text-align: center;
+      }
+      .cta p {
+        color: #c7ccd4;
+        max-width: 46ch;
+        margin: 0 auto 30px;
+      }
+      .cta .btn {
+        border-color: var(--bg);
+        color: var(--bg);
+      }
+      .cta .btn.p {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #fff;
+      }
+      .cta .btn:hover {
+        background: var(--bg);
+        color: var(--tx);
+        border-color: var(--bg);
+      }
+      footer {
+        padding: 36px 0 40px;
+        color: var(--mut);
+        font-size: 0.92rem;
+        border-top: 1px solid var(--bd);
+      }
+      .fg {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .fg a:hover {
+        color: var(--ac);
+      }
+      .fg nav,
+      .fg div {
+        display: flex;
+        gap: 20px;
+        position: static;
+        background: none;
+        border: 0;
+        backdrop-filter: none;
+      }
+      @media (max-width: 991px) {
+        #intro .wrap,
+        .orb,
+        .rs {
+          grid-template-columns: 1fr;
+        }
+        .cg {
+          grid-template-columns: 1fr 1fr;
+        }
+        .how,
+        .bc {
+          grid-template-columns: 1fr;
+        }
+        .how div {
+          border: 0;
+          margin: 0 0 20px;
+        }
+        .row {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        .path {
+          flex-direction: column;
+        }
+        .path:before {
+          width: 2px;
+          height: auto;
+          left: 7px;
+          right: auto;
+          top: 0;
+          bottom: 0;
+          transform: scaleY(0);
+          transform-origin: top;
+        }
+        .path.in:before {
+          transform: scaleY(1);
+        }
+        .st {
+          padding: 0 0 30px 40px;
+        }
+        .st:before {
+          top: 2px;
+        }
+      }
+      @media (max-width: 767px) {
+        section {
+          padding: 70px 0;
+        }
+        .burger {
+          display: block;
+        }
+        .links {
+          position: fixed;
+          inset: 68px 0 auto 0;
+          flex-direction: column;
+          align-items: flex-start;
+          background: rgba(247, 245, 240, 0.97);
+          padding: 24px;
+          gap: 16px;
+          border-bottom: 1px solid var(--bd);
+          transform: translateY(-130%);
+          transition: transform 0.4s var(--ease);
+        }
+        .links.o {
+          transform: none;
+        }
+        .cg {
+          grid-template-columns: 1fr;
+        }
+        .tl {
+          padding-left: 40px;
+        }
+        .it:before {
+          left: -36px;
+        }
+        .cta {
+          padding: 56px 22px;
+        }
+        .cap .tg i {
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+        .mk {
+          clip-path: none;
+          transform: none;
+        }
+        .sl {
+          opacity: 1;
+          transform: none;
+        }
+        .it {
+          opacity: 1;
+        }
+      }
+    
+      /* Certificates list (dynamic) */
+      .cert-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+      .cert-item{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--wh);border:1px solid var(--bd);border-radius:14px;transition:border-color .3s,transform .4s var(--ease)}
+      .cert-item:hover{border-color:var(--ac);transform:translateY(-2px)}
+      .cert-item b{display:block;color:var(--tx);font-family:Fraunces,Georgia,serif;font-size:1.1rem;font-weight:600}
+      .cert-item small{display:block;color:var(--mut);font-size:.9rem}
+      .cert-act{display:flex;gap:8px;flex:none}
+      .cert-act .btn{padding:8px 16px;font-size:.85rem}
+      @media(max-width:600px){.cert-item{flex-direction:column;align-items:flex-start}}
+    </style>
+  </head>
+  <body>
+    <nav id="nav">
+      <div class="wrap">
+        <a href="{% url 'home' %}" class="logo" aria-label="Tejas Modi, Homepage"
+          >Tejas Modi<i>.</i></a
+        >
+        <button
+          class="burger"
+          id="bg"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <div class="links" id="lk">
+          <a href="{% url 'home' %}">Home</a
+          ><a href="{% url 'about' %}" aria-current="page">About</a
+          ><a href="{% url 'frontend_work' %}">Websites</a><a href="{% url 'backend_projects' %}">Backend Projects</a
+          ><a href="{% url 'contact' %}">Contact</a
+          ><a class="btn p" href="{% url 'start_a_project' %}">Start a project <span>→</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <header id="intro">
+        <div class="big" id="bgt" aria-hidden="true">About</div>
+        <div class="wrap">
+          <div class="intro">
+            <div class="meta sl">Full Stack Developer · Ranchi, India</div>
+            <h1 class="mk">Turning business ideas into working systems.</h1>
+            <p class="sl">
+              I’m a Python full stack developer who builds web applications with
+              Django, with a focus on clean architecture, automation and
+              performance. Most of my work is real-world management systems.
+            </p>
+            <a class="btn sl" href="#journey">Read my journey <span>↓</span></a>
+          </div>
+          <aside class="id sl" aria-label="Developer identity">
+            <div class="ph" aria-hidden="true">TM</div>
+            <dl>
+              <dt>Role</dt>
+              <dd>Python Full Stack Developer</dd>
+              <dt>Primary stack</dt>
+              <dd>Python, Django, MySQL</dd>
+              <dt>Focus</dt>
+              <dd>
+                Management systems, role-based dashboards, backend architecture
+              </dd>
+            </dl>
+            <div class="ln">
+              <a
+                href="https://www.linkedin.com/in/tejas-modi-26563a248/"
+                target="_blank"
+                rel="noopener"
+                >LinkedIn</a
+              ><a href="mailto:moditejas127@gmail.com">Email</a>
+            </div>
+          </aside>
+        </div>
+      </header>
+
+      <section id="orbit">
+        <div class="wrap orb">
+          <div>
+            <h2 class="mk">The ecosystem around the code</h2>
+            <p class="lead">
+              Hover or tap a node to see how each part of the stack fits into
+              the way I build.
+            </p>
+            <div class="pn" id="pn" aria-live="polite">
+              <h3>Developer</h3>
+              <p>Select a node to read how I use it.</p>
+            </div>
+          </div>
+          <div class="stage" id="stage">
+            <canvas
+              id="gl"
+              aria-label="Interactive orbit of technologies: Python, Django, databases, frontend, APIs and authentication"
+            ></canvas>
+          </div>
+        </div>
+      </section>
+
+      {% if experiences %}
+      <section id="journey">
+        <div class="wrap">
+          <h2 class="mk">My professional journey</h2>
+          <p class="lead">
+            My roles so far, newest first. Open an entry for details.
+          </p>
+          <div class="tl" id="tl">
+            <span class="fill" id="tf"></span>
+            {% for e in experiences %}
+            <article class="it">
+              <span class="d">{{ e.period_display }}</span>
+              <h3>{{ e.role }}</h3>
+              <p class="co">{{ e.company }}{% if e.location %} · {{ e.location }}{% endif %}</p>
+              <button class="ex" aria-expanded="false">
+                <b>+</b><span>View experience</span>
+              </button>
+              <div class="det">
+                <div>
+                  <p>{{ e.description|linebreaksbr }}</p>
+                  {% if e.tech_list %}
+                  <div class="tg">
+                    {% for t in e.tech_list %}<i>{{ t }}</i>{% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <section id="do">
+        <div class="wrap">
+          <h2 class="mk">What I do</h2>
+          <p class="lead">
+            The kinds of work my projects and roles have covered.
+          </p>
+          <div class="cg">
+            <article class="cap">
+              <div class="n">01</div>
+              <h3>Backend systems</h3>
+              <p>Structured server-side logic and APIs in Python and Django.</p>
+              <div class="tg"><i>Django</i><i>ORM</i><i>APIs</i></div>
+            </article>
+            <article class="cap">
+              <div class="n">02</div>
+              <h3>Full-stack applications</h3>
+              <p>Admin panels and customer-facing sites built together.</p>
+              <div class="tg"><i>HTML</i><i>Bootstrap</i><i>JavaScript</i></div>
+            </article>
+            <article class="cap">
+              <div class="n">03</div>
+              <h3>Database design</h3>
+              <p>Data models and query work behind every module.</p>
+              <div class="tg"><i>MySQL</i><i>PostgreSQL</i><i>SQLite</i></div>
+            </article>
+            <article class="cap">
+              <div class="n">04</div>
+              <h3>Management platforms</h3>
+              <p>HR, labour, salon and real estate operations in one system.</p>
+              <div class="tg"><i>Workflows</i><i>Reports</i></div>
+            </article>
+            <article class="cap">
+              <div class="n">05</div>
+              <h3>Roles and access</h3>
+              <p>Dashboards and permissions for each type of user.</p>
+              <div class="tg"><i>Sessions</i><i>User roles</i></div>
+            </article>
+            <article class="cap">
+              <div class="n">06</div>
+              <h3>CMS and admin panels</h3>
+              <p>Content and operations managed without code changes.</p>
+              <div class="tg"><i>CMS</i><i>Admin</i></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {% if skill_categories %}
+      <section id="arsenal">
+        <div class="wrap">
+          <h2 class="mk">Technical arsenal</h2>
+          <p class="lead">
+            Listed as they appear on my resume, grouped by what they’re used
+            for.
+          </p>
+          <div class="ars">
+            {% for c in skill_categories %}
+            <div class="row">
+              <h3>{{ c.name }}</h3>
+              <div class="tg">
+                {% for sk in c.live_skills %}<i>{{ sk.name }}</i>{% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <section id="edu">
+        <div class="wrap">
+          <h2 class="mk">Education</h2>
+          <div class="path" id="path">
+            <div class="st">
+              <span class="d">06/2019 – 03/2020</span>
+              <h3>Senior Secondary (12th)</h3>
+              <p>Science stream, Bokaro Public School, Bokaro, Jharkhand</p>
+            </div>
+            <div class="st">
+              <span class="d">10/2020 – 06/2024</span>
+              <h3>B.Tech, Computer Science &amp; Engineering</h3>
+              <p>
+                Institute of Technical Education and Research (ITER), Siksha ‘O’
+                Anusandhan University, Bhubaneswar, Odisha
+              </p>
+            </div>
+            <div class="st">
+              <span class="d">02/2025</span>
+              <h3>First developer role</h3>
+              <p>Python Full Stack Developer Intern</p>
+            </div>
+          </div>
+          {% if certificates %}
+          <div class="cert" id="certs">
+            <b>Certificates</b>
+            <ul class="cert-list">
+              {% for c in certificates %}
+              <li class="cert-item">
+                <div>
+                  <b>{{ c.name }}</b>
+                  {% if c.description %}<small>{{ c.description }}</small>{% endif %}
+                </div>
+                {% if c.pdf_file %}
+                <div class="cert-act">
+                  <button type="button" class="btn" data-cert="{% url 'certificate_pdf' c.id %}" data-title="{{ c.name }}">View</button>
+                  <a class="btn" href="{% url 'certificate_pdf' c.id %}?download=1">Download</a>
+                </div>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="how">
+        <div class="wrap">
+          <h2 class="mk">How I build</h2>
+          <p class="lead">Drawn from the projects on my resume.</p>
+          <div class="how">
+            <div>
+              <span class="n">Step 1</span>
+              <h3>Understand</h3>
+              <p>
+                Start from the business process: who uses the system, what they
+                track and what is still done by hand.
+              </p>
+            </div>
+            <div>
+              <span class="n">Step 2</span>
+              <h3>Structure</h3>
+              <p>
+                Model the data and define roles, so each team gets the dashboard
+                and access it needs.
+              </p>
+            </div>
+            <div>
+              <span class="n">Step 3</span>
+              <h3>Build</h3>
+              <p>
+                Implement the Django backend, database and interface, then
+                automate repeat work like inventory updates and salary
+                processing.
+              </p>
+            </div>
+          </div>
+          <div class="bc">
+            <div>
+              <h3>Clean architecture</h3>
+              <p>Reusable components and structured backend logic.</p>
+            </div>
+            <div>
+              <h3>Automation</h3>
+              <p>Fewer manual records, more workflow handled by the system.</p>
+            </div>
+            <div>
+              <h3>Always learning</h3>
+              <p>Python, Java and web development certificates.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="resume"{% if not has_resume %} style="padding: 0"{% endif %}>
+        {% if has_resume %}
+        <div class="wrap rs">
+          <button
+            class="paper sl"
+            id="op"
+            aria-haspopup="dialog"
+            aria-label="Preview resume"
+          >
+            <div>
+              <small>Resume</small>
+              <h3>Tejas Modi</h3>
+              <p style="margin: 4px 0 20px">Full Stack Developer</p>
+              <i></i><i></i><i></i>
+            </div>
+            <span>Preview →</span>
+          </button>
+          <div>
+            <h2 class="mk">My resume</h2>
+            <p class="lead" style="margin-bottom: 28px">
+              Read it here or keep a copy. The file shown is the one marked
+              active in the dashboard.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap">
+              <button class="btn p" id="vw">View resume</button
+              ><a class="btn" id="dl" href="{% url 'resume_download' %}" download
+                >Download PDF <span>↓</span></a
+              >
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <dialog id="dg" aria-label="Resume preview">
+          <div class="hd">
+            <b>Resume</b><button class="btn" id="cl">Close</button>
+          </div>
+          <div id="dc"></div>
+        </dialog>
+      </section>
+
+      <section id="cta" style="padding-top: 20px">
+        <div class="wrap">
+          <div class="cta">
+            <h2>Ready to build something?</h2>
+            <p>Explore my work, or tell me what you want to build.</p>
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                flex-wrap: wrap;
+              "
+            >
+              <a class="btn" href="{% url 'frontend_work' %}"\1 <span>Frontend Work →</span></a
+              ><a class="btn p" href="{% url 'start_a_project' %}"\1 <span>Ready for Your 1st Project→</span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap fg">
+        <div><b>Tejas Modi</b> · Python Full Stack Developer</div>
+        <div>
+          <a href="{% url 'home' %}">Homepage</a
+          ><a
+            href="https://www.linkedin.com/in/tejas-modi-26563a248/"
+            target="_blank"
+            rel="noopener"
+            >LinkedIn</a
+          ><a href="mailto:moditejas127@gmail.com">Email</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)],
+        RM = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      const nav = $("#nav"),
+        bgt = $("#bgt"),
+        tl = $("#tl");
+      addEventListener(
+        "scroll",
+        () => {
+          nav.classList.toggle("sc", scrollY > 30);
+          if (!RM) bgt.style.transform = `translateY(${scrollY * 0.15}px)`;
+          if (!tl) return;
+          const r = tl.getBoundingClientRect();
+          $("#tf").style.height =
+            Math.max(0, Math.min(r.height - 16, innerHeight * 0.55 - r.top)) +
+            "px";
+        },
+        { passive: true },
+      );
+      $("#bg").onclick = (e) => {
+        const o = $("#lk").classList.toggle("o");
+        e.target.setAttribute("aria-expanded", o);
+      };
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          }),
+        { threshold: 0.15 },
+      );
+      $$(".mk,.sl,#path").forEach((x) => io.observe(x));
+
+      /* Hero h1: observer par depend nahi, load par hi reveal animation chalao */
+      const heroH1 = $("#intro h1.mk");
+      if (heroH1) {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => heroH1.classList.add("in")),
+        );
+      }
+
+      const ia = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("act");
+          }),
+        { rootMargin: "0px 0px -40% 0px" },
+      );
+      $$(".it").forEach((x) => ia.observe(x));
+      $$(".ex").forEach(
+        (b) =>
+          (b.onclick = () => {
+            const it = b.closest(".it"),
+              o = it.classList.toggle("open");
+            b.setAttribute("aria-expanded", o);
+            b.firstChild.textContent = o ? "−" : "+";
+            b.lastChild.textContent = o
+              ? "Close experience"
+              : "View experience";
+          }),
+      );
+      /* Resume: preview opens the active resume from the dashboard.
+         The dialog stays on the page even without a resume, because Certificates use it too. */
+      const RESUME_URL = "{% if has_resume %}{% url 'resume_view' %}{% endif %}",
+        dg = $("#dg");
+      const open = () => {
+        if (!RESUME_URL) return;
+        $("#dg .hd b").textContent = "Resume";
+        $("#dc").innerHTML = `<iframe src="${RESUME_URL}" title="Resume"></iframe>`;
+        dg.showModal();
+      };
+      if ($("#op")) $("#op").onclick = open;
+      if ($("#vw")) $("#vw").onclick = open;
+      $("#cl").onclick = () => dg.close();
+      /* Certificates: open the PDF in the same viewer dialog */
+      $$("[data-cert]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            const f = document.createElement("iframe");
+            f.src = b.dataset.cert;
+            f.title = b.dataset.title;
+            $("#dg .hd b").textContent = b.dataset.title;
+            $("#dc").replaceChildren(f);
+            dg.showModal();
+          }),
+      );
+      /* orbit */
+      (() => {
+        if (!window.THREE) return;
+        const box = $("#stage"),
+          cv = $("#gl");
+        const R = new THREE.WebGLRenderer({
+          canvas: cv,
+          alpha: true,
+          antialias: true,
+        });
+        R.setPixelRatio(Math.min(devicePixelRatio, 2));
+        const S = new THREE.Scene(),
+          C = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+        C.position.set(0, 2, 9.5);
+        const G = new THREE.Group();
+        G.rotation.x = 0.4;
+        S.add(G);
+        const dark = 0x1f2937,
+          acc = 0xc2410c;
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(3.18, 3.2, 96),
+          new THREE.MeshBasicMaterial({
+            color: dark,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide,
+          }),
+        );
+        ring.rotation.x = Math.PI / 2;
+        G.add(ring);
+        const core = new THREE.Mesh(
+          new THREE.SphereGeometry(0.5, 24, 24),
+          new THREE.MeshBasicMaterial({ color: acc }),
+        );
+        G.add(core);
+        const wf = new THREE.Mesh(
+          new THREE.IcosahedronGeometry(0.95, 1),
+          new THREE.MeshBasicMaterial({
+            color: dark,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.35,
+          }),
+        );
+        G.add(wf);
+        const D = [
+            [
+              "Python",
+              "The primary language for backend logic and business rules.",
+            ],
+            [
+              "Django",
+              "Models, views, forms, the ORM, admin panels and MVC structure.",
+            ],
+            [
+              "Databases",
+              "MySQL, PostgreSQL and SQLite, with data modeling and query optimization.",
+            ],
+            [
+              "Frontend",
+              "HTML5, CSS3, JavaScript and Bootstrap for responsive interfaces.",
+            ],
+            [
+              "APIs",
+              "API integration, and backend APIs for listings and requests in the real estate project.",
+            ],
+            [
+              "Authentication",
+              "Session authentication, user roles and access control.",
+            ],
+          ],
+          N = D.length,
+          nodes = [];
+        let cur = -1;
+        D.forEach((d, i) => {
+          const m = new THREE.Mesh(
+            new THREE.SphereGeometry(0.16, 16, 16),
+            new THREE.MeshBasicMaterial({ color: dark }),
+          );
+          G.add(m);
+          const g = new THREE.BufferGeometry();
+          g.setAttribute(
+            "position",
+            new THREE.BufferAttribute(new Float32Array(6), 3),
+          );
+          const l = new THREE.Line(
+            g,
+            new THREE.LineBasicMaterial({
+              color: dark,
+              transparent: true,
+              opacity: 0.22,
+            }),
+          );
+          G.add(l);
+          const b = document.createElement("button");
+          b.className = "lb";
+          b.textContent = d[0];
+          box.appendChild(b);
+          b.onmouseenter = b.onfocus = b.onclick = () => sel(i);
+          nodes.push({ m, l, g, b, a: (i / N) * 6.283 });
+        });
+        function sel(i) {
+          cur = i;
+          nodes.forEach((n, k) => {
+            const on = k === i;
+            n.b.classList.toggle("on", on);
+            n.m.scale.setScalar(on ? 1.8 : 1);
+            n.m.material.color.setHex(on ? acc : dark);
+            n.l.material.opacity = on ? 0.9 : 0.22;
+            n.l.material.color.setHex(on ? acc : dark);
+          });
+          $("#pn").innerHTML = `<h3>${D[i][0]}</h3><p>${D[i][1]}</p>`;
+        }
+        let mx = 0,
+          my = 0,
+          vis = false,
+          t = 0;
+        addEventListener(
+          "pointermove",
+          (e) => {
+            mx = e.clientX / innerWidth - 0.5;
+            my = e.clientY / innerHeight - 0.5;
+          },
+          { passive: true },
+        );
+        const rs = () => {
+          const w = box.clientWidth,
+            h = box.clientHeight;
+          R.setSize(w, h, false);
+          C.aspect = w / h;
+          C.updateProjectionMatrix();
+          draw();
+        };
+        const v = new THREE.Vector3();
+        function draw() {
+          nodes.forEach((n, i) => {
+            const a = n.a + t * 0.00018,
+              x = Math.cos(a) * 3.2,
+              z = Math.sin(a) * 3.2,
+              y = Math.sin(a * 2 + i) * 0.45;
+            n.m.position.set(x, y, z);
+            const p = n.g.attributes.position;
+            p.setXYZ(1, x, y, z);
+            p.needsUpdate = true;
+          });
+          wf.rotation.y = t * 0.0004;
+          C.position.x += (mx * 1.4 - C.position.x) * 0.05;
+          C.position.y += (2 - my * 1.2 - C.position.y) * 0.05;
+          C.lookAt(0, 0, 0);
+          R.render(S, C);
+          const w = box.clientWidth,
+            h = box.clientHeight;
+          nodes.forEach((n) => {
+            v.copy(n.m.position).applyMatrix4(G.matrixWorld).project(C);
+            n.b.style.transform = `translate(${(v.x * 0.5 + 0.5) * w + 12}px,${(-v.y * 0.5 + 0.5) * h - 12}px)`;
+          });
+        }
+        function loop(ts) {
+          if (!vis || RM) return;
+          t = ts;
+          draw();
+          requestAnimationFrame(loop);
+        }
+        new IntersectionObserver((e) => {
+          vis = e[0].isIntersecting;
+          if (vis && !RM) requestAnimationFrame(loop);
+        }).observe(box);
+        addEventListener("resize", rs);
+        rs();
+      })();
+    </script>
+  </body>
+</html>

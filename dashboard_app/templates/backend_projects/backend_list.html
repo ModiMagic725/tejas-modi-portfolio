@@ -1,0 +1,108 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Backend projects{% endblock %}
+
+{% block content %}
+{# Context: projects (Page), q, selected, categories #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Backend projects</h2>
+    <p class="muted">Software systems for the Backend page. Switch a project off to hide it from the public site.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-primary" href="{% url 'add_backend' %}"><svg class="ic"><use href="#i-plus"/></svg>Add backend project</a>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Filter backend projects">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search title, description or technology" aria-label="Search backend projects">
+    </div>
+    <select class="input" name="category" aria-label="Filter by category">
+      <option value="">All categories</option>
+      {% for value, label in categories %}<option value="{{ value }}"{% if value == selected %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Filter</button>
+    {% if q or selected %}<a class="btn btn-ghost" href="{% url 'backend_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if projects %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Project</th><th>Category</th><th>Technologies</th><th>Documentation</th><th>Show on site</th><th>Order</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for p in projects %}
+        <tr{% if not p.is_published %} class="is-off"{% endif %}>
+          <td>
+            <div class="proj">
+              {% if p.thumbnail %}
+                <img class="thumb" src="{{ p.thumbnail.url }}" alt="" width="72" height="48" loading="lazy">
+              {% else %}
+                <span class="thumb thumb-ph" aria-hidden="true"><svg class="ic"><use href="#i-server"/></svg></span>
+              {% endif %}
+              <div>
+                <strong>{{ p.title }}</strong>
+                <small>{{ p.project_id }}</small>
+                {% if p.period %}<small>{{ p.period }}</small>{% endif %}
+                <small>{{ p.modules_list|length }} module{{ p.modules_list|length|pluralize }}{% if p.roles_list %} · {{ p.roles_list|length }} role{{ p.roles_list|length|pluralize }}{% endif %}</small>
+              </div>
+            </div>
+          </td>
+          <td><span class="pill">{{ p.get_category_display }}</span></td>
+          <td>
+            {% if p.tech_list %}<div class="chips">{% for t in p.tech_list %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% else %}<small>None added</small>{% endif %}
+          </td>
+          <td>
+            {% if p.documentation_pdf %}
+              <span class="pill pill-on">PDF attached</span>
+              <small>{{ p.download_count }} download{{ p.download_count|pluralize }}</small>
+            {% else %}
+              <span class="pill pill-off">No PDF</span>
+            {% endif %}
+          </td>
+          <td>
+            <form class="tg-form" method="post" action="{% url 'toggle_backend_published' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
+            </form>
+            <form class="tg-form" method="post" action="{% url 'toggle_backend_featured' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.is_featured|yesno:'true,false' }}"><i aria-hidden="true"></i>Featured</button>
+            </form>
+            {% if p.github_url %}
+            <form class="tg-form" method="post" action="{% url 'toggle_backend_github' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.show_github|yesno:'true,false' }}"><i aria-hidden="true"></i>GitHub link</button>
+            </form>
+            {% endif %}
+            {% if p.documentation_pdf %}
+            <form class="tg-form" method="post" action="{% url 'toggle_backend_pdf_download' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.allow_pdf_download|yesno:'true,false' }}"><i aria-hidden="true"></i>PDF download</button>
+            </form>
+            {% endif %}
+          </td>
+          <td class="num">{{ p.display_order }}</td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'edit_backend' p.id %}" title="Edit" aria-label="Edit {{ p.title }}"><svg class="ic"><use href="#i-edit"/></svg></a>
+              <form method="post" action="{% url 'delete_backend' p.id %}" data-confirm="Delete “{{ p.title }}”? Its documentation PDF record is removed too. This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ p.title }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=projects noun="projects" %}
+
+  {% elif q or selected %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No projects match your filter.</p><small><a href="{% url 'backend_list' %}">Clear the filter</a> to see all projects.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-server"/></svg><p>No backend projects yet.</p><small>Add your first system. It appears on the public site once it is published.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_backend' %}"><svg class="ic"><use href="#i-plus"/></svg>Add backend project</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

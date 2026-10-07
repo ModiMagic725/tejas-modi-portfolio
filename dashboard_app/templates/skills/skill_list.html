@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Sub categories{% endblock %}
+
+{% block content %}
+{# Context: categories (with prefetched skills), skill_total #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Sub categories</h2>
+    <p class="muted">The items shown inside each category of the Technical arsenal on the About page. Manage the categories themselves on the <a href="{% url 'skill_category_list' %}">Categories</a> page.</p>
+  </div>
+  <div class="head-actions">
+    {% if categories %}<a class="btn btn-primary" href="{% url 'add_skill' %}"><svg class="ic"><use href="#i-plus"/></svg>Add sub categories</a>{% endif %}
+  </div>
+</section>
+
+{% for c in categories %}
+<section class="card sk-cat{% if not c.is_published %} is-off{% endif %}">
+  <header class="card-h">
+    <h3>{{ c.name }} <small class="sk-meta">{{ c.skills.all|length }} item{{ c.skills.all|length|pluralize }} · order {{ c.display_order }}</small></h3>
+    <div class="sk-actions">
+      <a class="btn btn-ghost btn-sm" href="{% url 'add_skill' %}?category={{ c.id }}"><svg class="ic"><use href="#i-plus"/></svg>Add sub category</a>
+    </div>
+  </header>
+
+  {% if c.skills.all %}
+  <ul class="sk-chips">
+    {% for s in c.skills.all %}
+    <li class="sk-chip{% if not s.is_published %} is-off{% endif %}">
+      <a href="{% url 'edit_skill' s.id %}" title="Edit {{ s.name }}">{{ s.name }}</a>
+      <form method="post" action="{% url 'delete_skill' s.id %}" data-confirm="Delete the sub category “{{ s.name }}”?">{% csrf_token %}
+        <button type="submit" aria-label="Delete {{ s.name }}">&times;</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted" style="margin:0">No sub categories in this category yet.</p>
+  {% endif %}
+</section>
+{% empty %}
+<section class="card">
+  <div class="empty"><svg class="ic"><use href="#i-bolt"/></svg><p>No categories yet.</p>
+    <small>Start with a category such as “Languages”, “Backend” or “Databases”. Then add sub categories inside it.</small>
+    <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_skill_category' %}"><svg class="ic"><use href="#i-plus"/></svg>Add category</a></p>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

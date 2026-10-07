@@ -1,0 +1,137 @@
+{# Shared by add_backend.html and edit_backend.html.  Context: categories, project (edit only), form (POST data after a validation error). #}
+<form method="post" enctype="multipart/form-data" class="form-stack" id="projectForm">
+  {% csrf_token %}
+
+  <section class="card">
+    <header class="card-h"><h3>Basic information</h3></header>
+    <div class="form-grid">
+      <div class="field span-2">
+        <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="title" name="title" maxlength="120" required value="{% if form %}{{ form.title }}{% else %}{{ project.title }}{% endif %}">
+      </div>
+      <div class="field span-2">
+        <label for="short_description">Short description <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="short_description" name="short_description" maxlength="220" required aria-describedby="h-short" value="{% if form %}{{ form.short_description }}{% else %}{{ project.short_description }}{% endif %}">
+        <p class="hint" id="h-short">One line for the project card. Up to 220 characters.</p>
+      </div>
+      <div class="field span-2">
+        <label for="description">Description <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="description" name="description" rows="6" required>{% if form %}{{ form.description }}{% else %}{{ project.description }}{% endif %}</textarea>
+      </div>
+      <div class="field">
+        <label for="category">Category <span class="req" aria-hidden="true">*</span></label>
+        <select id="category" name="category" required>
+          {% for value, label in categories %}
+            <option value="{{ value }}"{% if form %}{% if form.category == value %} selected{% endif %}{% elif project %}{% if project.category == value %} selected{% endif %}{% elif forloop.first %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="period">Period</label>
+        <input type="text" id="period" name="period" maxlength="40" placeholder="01/2026 – 04/2026" value="{% if form %}{{ form.period }}{% else %}{{ project.period }}{% endif %}">
+      </div>
+      <div class="field span-2">
+        <label for="technologies">Technologies</label>
+        <input type="text" id="technologies" name="technologies" maxlength="300" placeholder="Django, MySQL" aria-describedby="h-tech" value="{% if form %}{{ form.technologies }}{% else %}{{ project.technologies }}{% endif %}">
+        <p class="hint" id="h-tech">Separate with commas. Only list what the project really uses. Up to 12; duplicates are removed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>System details</h3></header>
+    <p class="hint" style="margin:-6px 0 16px">The Backend page shows these exactly as written. Only add what this project really has.</p>
+    <div class="form-grid">
+      <div class="field span-2">
+        <label for="hub_label">Diagram centre label</label>
+        <input type="text" id="hub_label" name="hub_label" maxlength="40" placeholder="Role-based dashboards" aria-describedby="h-hub" value="{% if form %}{{ form.hub_label }}{% else %}{{ project.hub_label }}{% endif %}">
+        <p class="hint" id="h-hub">The text in the middle of the architecture diagram.</p>
+      </div>
+      <div class="field">
+        <label for="modules">Modules</label>
+        <textarea id="modules" name="modules" rows="6" aria-describedby="h-mod">{% if form %}{{ form.modules }}{% else %}{{ project.modules }}{% endif %}</textarea>
+        <p class="hint" id="h-mod">One module per line.</p>
+      </div>
+      <div class="field">
+        <label for="roles">User roles</label>
+        <textarea id="roles" name="roles" rows="6" aria-describedby="h-roles">{% if form %}{{ form.roles }}{% else %}{{ project.roles }}{% endif %}</textarea>
+        <p class="hint" id="h-roles">One role per line.</p>
+      </div>
+      <div class="field span-2">
+        <label for="key_points">Key points</label>
+        <textarea id="key_points" name="key_points" rows="4" aria-describedby="h-pts">{% if form %}{{ form.key_points }}{% else %}{{ project.key_points }}{% endif %}</textarea>
+        <p class="hint" id="h-pts">One point per line.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Documentation and links</h3></header>
+    <div class="field">
+      <label for="documentation_pdf">Documentation PDF</label>
+      {% if project.documentation_pdf %}
+      <div class="doc-note">
+        <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+        <span>A PDF is attached · downloaded {{ project.download_count }} time{{ project.download_count|pluralize }}. Choose a file below to replace it.</span>
+      </div>
+      <label class="check" style="margin-bottom:12px">
+        <input type="checkbox" name="remove_pdf"{% if form and 'remove_pdf' in form %} checked{% endif %}>
+        <span><strong>Remove the current PDF</strong><small>Ignored if you upload a new file.</small></span>
+      </label>
+      {% endif %}
+      <input type="file" id="documentation_pdf" name="documentation_pdf" accept=".pdf,application/pdf" aria-describedby="h-pdf">
+      <p class="hint" id="h-pdf">PDF only, up to 20 MB. Visitors can preview it in the browser.</p>
+    </div>
+    <label class="check" style="margin-bottom:18px">
+      <input type="checkbox" name="allow_pdf_download"{% if form %}{% if 'allow_pdf_download' in form %} checked{% endif %}{% elif project %}{% if project.allow_pdf_download %} checked{% endif %}{% else %} checked{% endif %}>
+      <span><strong>Let visitors download the PDF</strong><small>Turn this off to allow preview only.</small></span>
+    </label>
+
+    <div class="field">
+      <label for="github_url">GitHub repository URL</label>
+      <input type="url" id="github_url" name="github_url" maxlength="200" placeholder="https://github.com/username/repository" value="{% if form %}{{ form.github_url }}{% else %}{{ project.github_url }}{% endif %}">
+    </div>
+    <label class="check">
+      <input type="checkbox" name="show_github"{% if form %}{% if 'show_github' in form %} checked{% endif %}{% elif project %}{% if project.show_github %} checked{% endif %}{% else %} checked{% endif %}>
+      <span><strong>Show the GitHub link on the site</strong><small>Turn this off to keep the repository private while the URL stays saved.</small></span>
+    </label>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Thumbnail and visibility</h3></header>
+    <div class="field">
+      <label for="thumbnail">Thumbnail</label>
+      {% if project.thumbnail %}
+      <div class="current">
+        <img class="thumb thumb-lg" src="{{ project.thumbnail.url }}" alt="Current thumbnail of {{ project.title }}">
+        <small>Current thumbnail. Choose a file below to replace it.</small>
+      </div>
+      {% endif %}
+      <input type="file" id="thumbnail" name="thumbnail" accept=".png,.jpg,.jpeg,.webp" aria-describedby="h-thumb" data-preview="#thumbPreview">
+      <p class="hint" id="h-thumb">Optional. PNG, JPG or WebP, up to 5 MB.</p>
+      <div class="previews" id="thumbPreview"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="display_order">Display order</label>
+        <input type="number" id="display_order" name="display_order" min="0" aria-describedby="h-order" value="{% if form %}{{ form.display_order|default:'0' }}{% elif project %}{{ project.display_order }}{% else %}0{% endif %}">
+        <p class="hint" id="h-order">Lower numbers appear first.</p>
+      </div>
+    </div>
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" name="is_published"{% if form %}{% if 'is_published' in form %} checked{% endif %}{% elif project %}{% if project.is_published %} checked{% endif %}{% else %} checked{% endif %}>
+        <span><strong>Published</strong><small>Visible on the public Backend page.</small></span>
+      </label>
+      <label class="check">
+        <input type="checkbox" name="is_featured"{% if form %}{% if 'is_featured' in form %} checked{% endif %}{% elif project.is_featured %} checked{% endif %}>
+        <span><strong>Featured</strong><small>Highlighted first and shown on the home page.</small></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{% url 'backend_list' %}">Cancel</a>
+    <button type="submit" class="btn btn-primary">{% if project %}Save changes{% else %}Add backend project{% endif %}</button>
+  </div>
+</form>

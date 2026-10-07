@@ -1,0 +1,68 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Contact messages{% endblock %}
+
+{% block content %}
+{# Context: items (Page), q, selected, statuses #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Contact messages</h2>
+    <p class="muted">Messages sent from the Contact page. Opening a message marks it as read.</p>
+  </div>
+</section>
+
+<section class="card">
+  <form class="toolbar" method="get" role="search" aria-label="Filter messages">
+    <div class="search">
+      <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search name, email, subject or message" aria-label="Search messages">
+    </div>
+    <select class="input" name="status" aria-label="Filter by status">
+      <option value="">All statuses</option>
+      {% for value, label in statuses %}<option value="{{ value }}"{% if value == selected %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Filter</button>
+    {% if q or selected %}<a class="btn btn-ghost" href="{% url 'message_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if items %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>From</th><th>Subject</th><th>Type</th><th>Received</th><th>Status</th><th><span class="sr">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for m in items %}
+        <tr{% if m.status == 'new' %} class="is-new"{% endif %}>
+          <td>
+            <strong>{{ m.name }}</strong>
+            <small><a href="mailto:{{ m.email }}">{{ m.email }}</a></small>
+          </td>
+          <td>
+            <a class="row-link" href="{% url 'view_message' m.id %}">{{ m.subject|default:"(no subject)"|truncatechars:50 }}</a>
+            <small>{{ m.message|truncatechars:70 }}</small>
+          </td>
+          <td>{% if m.project_type %}<span class="chip">{{ m.project_type }}</span>{% else %}<small>–</small>{% endif %}</td>
+          <td class="num">{{ m.created_at|date:"d M Y" }}<small>{{ m.created_at|date:"H:i" }}</small></td>
+          <td><span class="pill st-{{ m.status }}">{{ m.get_status_display }}</span></td>
+          <td>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-icon" href="{% url 'view_message' m.id %}" title="Open" aria-label="Open message from {{ m.name }}"><svg class="ic"><use href="#i-eye"/></svg></a>
+              <form method="post" action="{% url 'delete_message' m.id %}" data-confirm="Delete the message from {{ m.name }}? This cannot be undone.">{% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete message from {{ m.name }}"><svg class="ic"><use href="#i-trash"/></svg></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" with page_obj=items noun="messages" %}
+
+  {% elif q or selected %}
+  <div class="empty"><svg class="ic"><use href="#i-search"/></svg><p>No messages match your filter.</p><small><a href="{% url 'message_list' %}">Clear the filter</a> to see all messages.</small></div>
+  {% else %}
+  <div class="empty"><svg class="ic"><use href="#i-mail"/></svg><p>No messages yet.</p><small>Messages from your Contact page will appear here.</small></div>
+  {% endif %}
+</section>
+{% endblock %}

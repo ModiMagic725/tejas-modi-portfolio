@@ -1,0 +1,28 @@
+{# Shared pager. Use: {% include "dashboard/_pagination.html" with page_obj=projects noun="projects" %} #}
+{# Keeps the current search / filter in every link. #}
+{% if page_obj.paginator.count %}
+<nav class="pager" aria-label="Pagination">
+  <p>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} {{ noun|default:"items" }}</p>
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="pages">
+    {% if page_obj.has_previous %}
+      <a href="?{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k|urlencode }}={{ v|urlencode }}&amp;{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" aria-label="Previous page">&lsaquo;</a>
+    {% else %}<span class="dis" aria-hidden="true">&lsaquo;</span>{% endif %}
+
+    {% for n in page_obj.paginator.page_range %}
+      {% if n == page_obj.number %}
+        <span class="cur" aria-current="page">{{ n }}</span>
+      {% elif n == 1 or n == page_obj.paginator.num_pages or n >= page_obj.number|add:"-2" and n <= page_obj.number|add:"2" %}
+        <a href="?{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k|urlencode }}={{ v|urlencode }}&amp;{% endif %}{% endfor %}page={{ n }}" aria-label="Page {{ n }}">{{ n }}</a>
+      {% elif n == page_obj.number|add:"-3" or n == page_obj.number|add:"3" %}
+        <span class="gap" aria-hidden="true">…</span>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a href="?{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k|urlencode }}={{ v|urlencode }}&amp;{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" aria-label="Next page">&rsaquo;</a>
+    {% else %}<span class="dis" aria-hidden="true">&rsaquo;</span>{% endif %}
+  </div>
+  {% endif %}
+</nav>
+{% endif %}

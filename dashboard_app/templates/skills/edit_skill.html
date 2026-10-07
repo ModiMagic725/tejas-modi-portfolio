@@ -1,0 +1,51 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit sub category{% endblock %}
+
+{% block content %}
+{# Context: skill, categories, form (POST data after a validation error) #}
+<section class="page-head">
+  <div>
+    <h2 class="page-title">Edit sub category</h2>
+    <p class="muted">{{ skill.category.name }} · {{ skill.name }}</p>
+  </div>
+  <div class="head-actions"><a class="btn btn-ghost" href="{% url 'skill_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to sub categories</a></div>
+</section>
+
+<form method="post" class="form-stack" id="skillForm">
+  {% csrf_token %}
+
+  <section class="card">
+    <header class="card-h"><h3>Sub category details</h3></header>
+    <div class="form-grid">
+      <div class="field">
+        <label for="name">Sub category name <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="name" name="name" maxlength="60" required value="{% if form %}{{ form.name }}{% else %}{{ skill.name }}{% endif %}">
+      </div>
+      <div class="field">
+        <label for="category">Category <span class="req" aria-hidden="true">*</span></label>
+        <select id="category" name="category" required>
+          {% for c in categories %}
+            <option value="{{ c.id }}"{% if form %}{% if form.category == c.id|stringformat:'s' %} selected{% endif %}{% elif skill.category_id == c.id %} selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="display_order">Display order</label>
+        <input type="number" id="display_order" name="display_order" min="0" aria-describedby="h-order" value="{% if form %}{{ form.display_order|default:'0' }}{% else %}{{ skill.display_order }}{% endif %}">
+        <p class="hint" id="h-order">Lower numbers appear first inside the category.</p>
+      </div>
+    </div>
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" name="is_published"{% if form %}{% if 'is_published' in form %} checked{% endif %}{% elif skill.is_published %} checked{% endif %}>
+        <span><strong>Published</strong><small>Visible in the Technical arsenal on the About page.</small></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{% url 'skill_list' %}">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save changes</button>
+  </div>
+</form>
+{% endblock %}

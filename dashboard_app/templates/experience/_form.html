@@ -1,0 +1,89 @@
+{# Shared by add_experience.html and edit_experience.html.  Context: experience (edit only), form (POST data after a validation error). #}
+<form method="post" class="form-stack" id="experienceForm">
+  {% csrf_token %}
+
+  <section class="card">
+    <header class="card-h"><h3>Role details</h3></header>
+    <div class="form-grid">
+      <div class="field">
+        <label for="role">Role <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="role" name="role" maxlength="120" required placeholder="Python Full Stack Developer Intern" value="{% if form %}{{ form.role }}{% else %}{{ experience.role }}{% endif %}">
+      </div>
+      <div class="field">
+        <label for="company">Company <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="company" name="company" maxlength="120" required value="{% if form %}{{ form.company }}{% else %}{{ experience.company }}{% endif %}">
+      </div>
+      <div class="field span-2">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" maxlength="100" placeholder="Ranchi, India" value="{% if form %}{{ form.location }}{% else %}{{ experience.location }}{% endif %}">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Duration</h3></header>
+    <div class="form-grid">
+      <div class="field">
+        <label for="start_date">Start date <span class="req" aria-hidden="true">*</span></label>
+        <input type="date" id="start_date" name="start_date" required value="{% if form %}{{ form.start_date }}{% else %}{{ experience.start_date|date:'Y-m-d' }}{% endif %}">
+      </div>
+      <div class="field">
+        <label for="end_date">End date</label>
+        <input type="date" id="end_date" name="end_date" aria-describedby="h-end" value="{% if form %}{{ form.end_date }}{% else %}{{ experience.end_date|date:'Y-m-d' }}{% endif %}">
+        <p class="hint" id="h-end">Leave empty if you still work here.</p>
+      </div>
+    </div>
+    <label class="check" style="margin-top:6px">
+      <input type="checkbox" name="is_current" id="is_current"{% if form %}{% if 'is_current' in form %} checked{% endif %}{% elif experience.is_current %} checked{% endif %}>
+      <span><strong>I currently work here</strong><small>Shows “Present” as the end date and ignores the end date above.</small></span>
+    </label>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>What you did</h3></header>
+    <div class="form-grid">
+      <div class="field span-2">
+        <label for="description">Description <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="description" name="description" rows="7" required aria-describedby="h-desc">{% if form %}{{ form.description }}{% else %}{{ experience.description }}{% endif %}</textarea>
+        <p class="hint" id="h-desc">Shown when a visitor opens the entry on the About page. New lines are kept.</p>
+      </div>
+      <div class="field span-2">
+        <label for="technologies">Technologies</label>
+        <input type="text" id="technologies" name="technologies" maxlength="300" placeholder="Django, MySQL, Bootstrap" aria-describedby="h-tech" value="{% if form %}{{ form.technologies }}{% else %}{{ experience.technologies }}{% endif %}">
+        <p class="hint" id="h-tech">Separate with commas. Up to 12; duplicates are removed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Visibility</h3></header>
+    <div class="form-grid">
+      <div class="field">
+        <label for="display_order">Display order</label>
+        <input type="number" id="display_order" name="display_order" min="0" aria-describedby="h-order" value="{% if form %}{{ form.display_order|default:'0' }}{% elif experience %}{{ experience.display_order }}{% else %}0{% endif %}">
+        <p class="hint" id="h-order">Lower numbers appear first. With the same number, the newer role comes first.</p>
+      </div>
+    </div>
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" name="is_published"{% if form %}{% if 'is_published' in form %} checked{% endif %}{% elif experience %}{% if experience.is_published %} checked{% endif %}{% else %} checked{% endif %}>
+        <span><strong>Published</strong><small>Visible in the professional journey on the About page.</small></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{% url 'experience_list' %}">Cancel</a>
+    <button type="submit" class="btn btn-primary">{% if experience %}Save changes{% else %}Add experience{% endif %}</button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    var cur = document.getElementById('is_current'), end = document.getElementById('end_date');
+    if (!cur || !end) return;
+    function sync() { end.disabled = cur.checked; }
+    cur.addEventListener('change', sync);
+    sync();
+  })();
+</script>
