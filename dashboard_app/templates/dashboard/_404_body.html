@@ -1,0 +1,21 @@
+{# Shared body for the dashboard 404 page (used for both logged-in and logged-out admins) #}
+<section class="nf-card" role="alert">
+  <div class="nf-emoji" aria-hidden="true">🕵️‍♂️</div>
+  <span class="nf-badge">Error 404</span>
+  <h2>Sorry, Admin! You're looking for the wrong page.</h2>
+  <p class="muted">This dashboard page doesn't exist. Check the URL for a typo, or head back to a page you know.</p>
+
+  <div class="nf-url">
+    <small>URL you tried</small>
+    <code>{{ request.path }}</code>
+  </div>
+
+  <div class="nf-actions">
+    {% if is_logged_in %}
+      <a class="btn btn-primary" href="{% url 'dashboard' %}"><svg class="ic"><use href="#i-home"/></svg>Back to dashboard</a>
+    {% else %}
+      <a class="btn btn-primary" href="{% url 'login' %}"><svg class="ic"><use href="#i-user"/></svg>Go to sign in</a>
+    {% endif %}
+    <button type="button" class="btn btn-ghost" onclick="history.length > 1 ? history.back() : (location.href = '{% url 'dashboard' %}')"><svg class="ic"><use href="#i-back"/></svg>Go back</button>
+  </div>
+</section>

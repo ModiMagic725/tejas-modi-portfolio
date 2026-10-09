@@ -1,4 +1,4 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -13,7 +13,17 @@
     />
     <meta property="og:title" content="Frontend Work · Tejas Modi" />
     <meta property="og:type" content="website" />
+    <meta property="og:description" content="Websites and web interfaces built with Django, HTML, CSS and JavaScript." />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/og-cover.jpg' %}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0b1b1e" />
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'frontend_work' %}" />
+    <link rel="icon" href="{% static 'assets/favicon/favicon.ico' %}" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="{% static 'assets/favicon/favicon.svg' %}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/favicon/favicon-32.png' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/favicon/apple-touch-icon.png' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -41,6 +51,33 @@
       html {
         scroll-behavior: smooth;
         scroll-padding-top: 80px;
+        scrollbar-gutter: stable; /* no layout jump when the scrollbar is hidden by the open modal */
+        overflow-x: clip;
+      }
+      html.lock,
+      html.lock body {
+        overflow: hidden; /* background cannot scroll while the project modal is open */
+      }
+      [hidden] {
+        display: none !important; /* author display:grid/flex rules must never beat the hidden attribute */
+      }
+      img {
+        max-width: 100%;
+      }
+      .skip {
+        position: fixed;
+        left: 12px;
+        top: -60px;
+        z-index: 200;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: var(--ac);
+        color: #062226;
+        font-weight: 700;
+        transition: top 0.2s;
+      }
+      .skip:focus {
+        top: 12px;
       }
       body {
         margin: 0;
@@ -93,7 +130,9 @@
         display: inline-flex;
         gap: 10px;
         align-items: center;
-        padding: 12px 22px;
+        min-height: 44px;
+        padding: 10px 22px;
+        justify-content: center;
         border-radius: 10px;
         border: 1px solid var(--bd);
         background: var(--sf);
@@ -211,14 +250,37 @@
       .links a[aria-current] {
         color: var(--tx);
       }
+      nav.open {
+        background: rgba(11, 27, 30, 0.94);
+        border-color: var(--bd);
+      }
       .burger {
         display: none;
-        background: none;
-        border: 0;
+        position: relative;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid var(--bd);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
         color: var(--tx);
-        font-size: 1.6rem;
         cursor: pointer;
       }
+      .burger i {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+        transition: transform 0.35s var(--ease), top 0.35s var(--ease), opacity 0.2s;
+      }
+      .burger i:nth-child(1) { top: 14px; }
+      .burger i:nth-child(2) { top: 21px; }
+      .burger i:nth-child(3) { top: 28px; }
+      nav.open .burger i:nth-child(1) { top: 21px; transform: rotate(45deg); }
+      nav.open .burger i:nth-child(2) { opacity: 0; }
+      nav.open .burger i:nth-child(3) { top: 21px; transform: rotate(-45deg); }
       /* intro */
       #top {
         min-height: 100svh;
@@ -599,6 +661,41 @@
         top: 96px;
         left: 8vw;
       }
+      #sel.static {
+        height: auto !important;
+      }
+      #sel.static .stk {
+        position: static;
+        height: auto;
+        padding: 90px 0 60px;
+        overflow: visible;
+      }
+      #sel.static .st {
+        position: static;
+        display: block;
+        margin: 0 0 22px 6vw;
+      }
+      #sel.static .trk {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        transform: none !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+      }
+      #sel.static .sl {
+        flex: 0 0 min(88vw, 980px);
+        padding: 0 0 0 6vw;
+        gap: 24px;
+        scroll-snap-align: start;
+      }
+      #sel.static .pg {
+        display: none;
+      }
+      @media (max-width: 991px) {
+        #sel.static .sl {
+          grid-template-columns: 1fr;
+        }
+      }
       /* intention */
       #int {
         text-align: center;
@@ -671,42 +768,111 @@
       .fg a:hover {
         color: var(--ac);
       }
-      /* modal */
+      /* modal: a flex column (fixed header + scrolling body) that can never be taller than the visible viewport */
       dialog {
-        width: min(1000px, 95vw);
-        max-height: 92vh;
-        border: 1px solid var(--bd);
-        border-radius: 18px;
-        background: var(--bg);
-        color: var(--tx);
+        width: min(1040px, calc(100vw - 24px));
+        max-width: none;
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        margin: auto;
         padding: 0;
-        overflow: auto;
-      }
-      dialog::backdrop {
-        background: rgba(5, 12, 14, 0.78);
-        backdrop-filter: blur(6px);
+        overflow: hidden;
+        border: 1px solid var(--bd);
+        border-radius: 20px;
+        background: linear-gradient(180deg, #0f2428, var(--bg) 40%);
+        color: var(--tx);
+        cursor: auto;
+        box-shadow: 0 40px 120px -30px rgba(0, 0, 0, 0.85);
       }
       dialog[open] {
-        animation: op 0.5s var(--ease);
+        display: flex;
+        flex-direction: column;
+        animation: op 0.35s var(--ease);
       }
-      @keyframes op {
-        from {
-          opacity: 0;
-          transform: scale(0.92);
-        }
+      dialog.closing {
+        animation: oc 0.2s ease forwards;
+      }
+      dialog::backdrop {
+        background: rgba(5, 12, 14, 0.8);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        animation: bi 0.3s ease;
+      }
+      dialog.closing::backdrop {
+        animation: bo 0.2s ease forwards;
+      }
+      @keyframes op { from { opacity: 0; transform: translateY(16px) scale(0.97); } }
+      @keyframes oc { to { opacity: 0; transform: translateY(10px) scale(0.98); } }
+      @keyframes bi { from { opacity: 0; } }
+      @keyframes bo { to { opacity: 0; } }
+      dialog a,
+      dialog button {
+        cursor: pointer;
       }
       .mh {
+        flex: none;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 16px 24px;
+        gap: 14px;
+        padding: 14px 16px 14px 24px;
         border-bottom: 1px solid var(--bd);
+        background: rgba(11, 27, 30, 0.96);
+      }
+      .mt {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      #dt {
+        margin: 0;
+        font-size: clamp(1.1rem, 2.6vw, 1.5rem);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+      .cat {
+        color: var(--ac2);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        border-radius: 99px;
+        padding: 0 10px;
+      }
+      .x {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid var(--bd);
+        background: var(--sf);
+        color: var(--tx);
+        transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.35s var(--ease);
+      }
+      .x:hover,
+      .x:focus-visible {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #062226;
+        transform: rotate(90deg);
       }
       .mb {
-        padding: 24px;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
         display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 30px;
+        grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+        align-content: start;
+        gap: 28px;
+        padding: 22px 24px calc(26px + env(safe-area-inset-bottom, 0px));
+      }
+      .ml,
+      .md {
+        min-width: 0;
       }
       .dv {
         display: flex;
@@ -714,13 +880,17 @@
         margin-bottom: 14px;
       }
       .dv button {
+        min-height: 36px;
         background: none;
         border: 1px solid var(--bd);
         color: var(--mut);
-        border-radius: 6px;
-        padding: 3px 12px;
+        border-radius: 8px;
+        padding: 3px 14px;
         font: 500 0.75rem "IBM Plex Mono";
-        cursor: pointer;
+        transition: color 0.25s, border-color 0.25s;
+      }
+      .dv button:hover {
+        color: var(--tx);
       }
       .dv button[aria-pressed="true"] {
         border-color: var(--ac2);
@@ -728,29 +898,112 @@
       }
       .cv {
         overflow: hidden;
+        border-radius: 12px;
+        touch-action: pan-y;
       }
       .cv .tr {
         display: flex;
         transition: transform 0.5s var(--ease);
       }
-      .cv .tr > * {
+      .sld {
         flex: 0 0 100%;
+        min-width: 0;
+        padding: 2px 2px 14px;
+      }
+      .sld .fr {
+        max-width: 100%;
+        width: 100%;
       }
       .cn {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         align-items: center;
-        margin-top: 14px;
         justify-content: center;
+        margin-top: 6px;
       }
       .cn button {
-        width: 34px;
-        height: 34px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         border: 1px solid var(--bd);
         background: var(--sf);
         color: var(--tx);
-        cursor: pointer;
+        transition: border-color 0.25s, background 0.25s;
+      }
+      .cn button:hover {
+        border-color: var(--ac);
+        background: rgba(45, 212, 191, 0.12);
+      }
+      .dsec {
+        margin-bottom: 22px;
+      }
+      .dsec h3 {
+        font-size: 0.8rem;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ac2);
+        margin-bottom: 10px;
+      }
+      .dsec .tech {
+        margin-bottom: 0;
+      }
+      .long {
+        margin: 0;
+        color: var(--mut);
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+      }
+      .feat {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--mut);
+      }
+      .feat li {
+        margin-bottom: 6px;
+        overflow-wrap: anywhere;
+      }
+      .macts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      @media (max-width: 860px) {
+        .mb {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 22px;
+        }
+      }
+      @media (max-width: 560px) {
+        dialog {
+          width: calc(100vw - 16px);
+          max-height: calc(100vh - 16px);
+          max-height: calc(100dvh - 16px);
+          border-radius: 16px;
+        }
+        .mh {
+          padding: 10px 10px 10px 16px;
+        }
+        .mb {
+          padding: 16px 16px calc(22px + env(safe-area-inset-bottom, 0px));
+        }
+        .dv {
+          display: none; /* the preview is already phone-sized here */
+        }
+        .macts .btn {
+          flex: 1 1 100%;
+        }
+      }
+      @media (max-height: 480px) {
+        .mh {
+          padding-top: 8px;
+          padding-bottom: 8px;
+        }
+        .x {
+          width: 40px;
+          height: 40px;
+        }
       }
       #cur {
         position: fixed;
@@ -789,8 +1042,7 @@
         #top .wrap,
         .pr,
         .pr.r1,
-        .pr.r3,
-        .mb {
+        .pr.r3 {
           grid-template-columns: 1fr;
         }
         .pr {
@@ -816,40 +1068,42 @@
         }
         .links {
           position: fixed;
-          inset: 68px 0 auto 0;
+          inset: calc(68px + env(safe-area-inset-top, 0px)) 12px auto 12px;
           flex-direction: column;
-          align-items: flex-start;
-          background: rgba(11, 27, 30, 0.97);
-          padding: 24px;
-          gap: 16px;
-          border-bottom: 1px solid var(--bd);
-          transform: translateY(-130%);
-          transition: transform 0.4s var(--ease);
+          align-items: stretch;
+          gap: 2px;
+          padding: 10px;
+          background: rgba(11, 27, 30, 0.98);
+          border: 1px solid var(--bd);
+          border-radius: 18px;
+          box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.8);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: opacity 0.3s, transform 0.35s var(--ease), visibility 0s linear 0.35s;
         }
-        .links.o {
+        nav.open .links {
+          opacity: 1;
+          visibility: visible;
           transform: none;
+          transition-delay: 0s;
         }
-        .stk {
-          position: static;
-          height: auto;
-          padding: 80px 0 60px;
-          overflow: visible;
+        .links a:not(.btn) {
+          display: flex;
+          align-items: center;
+          min-height: 48px;
+          padding: 0 14px;
+          border-radius: 12px;
+          font-size: 1rem;
         }
-        .trk {
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          transform: none !important;
-        }
-        .sl {
-          flex: 0 0 88vw;
-          padding: 0 0 0 6vw;
-          grid-template-columns: 1fr;
-          gap: 20px;
-          scroll-snap-align: start;
-        }
-        .pg,
-        .st {
+        .links a:not(.btn):after {
           display: none;
+        }
+        .links a:not(.btn):hover {
+          background: rgba(255, 255, 255, 0.06);
+        }
+        .links .btn {
+          margin-top: 6px;
         }
         .uni .f3 {
           display: none;
@@ -873,20 +1127,14 @@
     </style>
   </head>
   <body>
+    <a class="skip" href="#main">Skip to content</a>
     <div id="cur" aria-hidden="true"></div>
-    <nav id="nav">
+    <nav id="nav" aria-label="Main navigation">
       <div class="wrap">
         <a href="{% url 'home' %}" class="logo" aria-label="Tejas Modi, home"
           >Tejas Modi<i>.</i></a
         >
-        <button
-          class="burger"
-          id="bg"
-          aria-label="Open menu"
-          aria-expanded="false"
-        >
-          ☰
-        </button>
+        <button class="burger" id="bg" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="lk"><i></i><i></i><i></i></button>
         <div class="links" id="lk">
           <a href="{% url 'home' %}">Home</a><a href="{% url 'about' %}">About</a
           ><a href="{% url 'frontend_work' %}" aria-current="page">Websites</a
@@ -896,10 +1144,10 @@
       </div>
     </nav>
 
-    <main>
+    <main id="main">
       <header id="top">
         <div class="wrap">
-          <div class="in" id="intro">
+          <div id="intro">
             <span class="tag mono">Frontend work</span>
             <h1>
               <span class="w"><span>Interfaces</span></span>
@@ -962,6 +1210,7 @@
               in the dashboard.
             </p>
             
+          <a class="btn p" href="{% url 'start_a_project' %}">Start a project</a>
           </div>
         </div>
       </section>
@@ -979,7 +1228,7 @@
 
       <section id="work" hidden>
         <div class="wrap">
-          <h2 class="in" id="wh">
+          <h2 id="wh">
             <span class="w"><span>Explore</span></span>
             <span class="w"><span>my</span></span>
             <span class="w"><span>work</span></span>
@@ -1034,279 +1283,405 @@
           ><a
             href="https://www.linkedin.com/in/tejas-modi-26563a248/"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             >LinkedIn</a
           ><a href="mailto:iamtejas.dev@gmail.com">Email</a>
         </div>
       </div>
     </footer>
 
-    <dialog id="dg" aria-label="Project details">
+    <dialog id="dg" aria-labelledby="dt">
       <div class="mh">
-        <b id="dt"></b><button class="btn" id="dc">Close</button>
+        <div class="mt">
+          <h2 id="dt"></h2>
+          <span class="mono cat" id="dcat" hidden></span>
+        </div>
+        <button class="x" id="dc" type="button" aria-label="Close project details">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        </button>
       </div>
-      <div class="mb">
-        <div>
+      <div class="mb" id="mbody">
+        <div class="ml">
           <div class="dv" role="group" aria-label="Preview device">
-            <button data-w="100%" aria-pressed="true">Desktop</button
-            ><button data-w="70%" aria-pressed="false">Tablet</button
-            ><button data-w="32%" aria-pressed="false">Mobile</button>
+            <button type="button" data-w="100%" aria-pressed="true">Desktop</button>
+            <button type="button" data-w="70%" aria-pressed="false">Tablet</button>
+            <button type="button" data-w="32%" aria-pressed="false">Mobile</button>
           </div>
           <div class="cv"><div class="tr" id="ctr"></div></div>
           <div class="cn" id="cnn"></div>
         </div>
-        <div id="dd"></div>
+        <div class="md" id="dd"></div>
       </div>
     </dialog>
 
     {{ websites|json_script:"websites-data" }}
     <script>
-      const $ = (s) => document.querySelector(s),
-        $$ = (s) => [...document.querySelectorAll(s)],
-        RM = matchMedia("(prefers-reduced-motion:reduce)").matches,
-        FINE = matchMedia("(hover:hover) and (pointer:fine)").matches,
-        MOB = () => innerWidth < 768;
-      /* Website projects come from the database (Django json_script) */
-      let WEBSITES = JSON.parse(document.getElementById("websites-data").textContent);
-      const nav = $("#nav");
-      addEventListener(
-        "scroll",
-        () => nav.classList.toggle("sc", scrollY > 30),
-        { passive: true },
-      );
-      $("#bg").onclick = (e) => {
-        const o = $("#lk").classList.toggle("o");
-        e.target.setAttribute("aria-expanded", o);
-      };
-      const io = new IntersectionObserver(
-        (es) =>
-          es.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("in");
-              io.unobserve(e.target);
-            }
-          }),
-        { threshold: 0.2 },
-      );
-      const watch = () =>
-        $$(".in:not(#intro):not(#wh),.rv,#intro,#wh,.pr").forEach((x) =>
-          io.observe(x),
-        );
-      const host = (u) => {
+      (() => {
+        "use strict";
+        const $ = (s) => document.querySelector(s),
+          $$ = (s) => [...document.querySelectorAll(s)],
+          RM = matchMedia("(prefers-reduced-motion:reduce)").matches,
+          FINE = matchMedia("(hover:hover) and (pointer:fine)").matches,
+          MOB = () => innerWidth < 768,
+          CURSOR = FINE && !RM,
+          root = document.documentElement;
+
+        /* Website projects come from the database (Django json_script) */
+        let WEBSITES = [];
         try {
-          return new URL(u).host;
-        } catch {
-          return "preview";
-        }
-      };
-      const frame = (p, i) =>
-        `<div class="fr" data-tilt data-cur="Explore"><div class="bar"><b></b><b></b><b></b><span>${host(p.url)}</span></div><div class="scr cl">${p.img ? `<img loading="lazy" decoding="async" src="${p.img}" alt="${p.name} screenshot">` : '<div class="mk"><i></i><i></i><i></i><i></i></div>'}</div></div>`;
-      const tech = (p) =>
-        `<div class="tech">${p.tech.map((t) => `<i>${t}</i>`).join("")}</div>`;
-      const nn = (i) => String(i + 1).padStart(2, "0");
-      function render() {
-        const has = WEBSITES.length;
-        $("#empty").hidden = !!has;
-        $("#sel").hidden = $("#work").hidden = !has;
-        if (!has) return;
+          WEBSITES = JSON.parse($("#websites-data").textContent || "[]");
+        } catch (e) {}
         const F = WEBSITES.filter((p) => p.featured);
-        $("#trk").innerHTML = F.map(
-          (p, i) =>
-            `<article class="sl"><div class="in">${frame(p)}</div><div><span class="num mono">${nn(i)}</span><h3>${p.name}</h3><p>${p.desc}</p>${tech(p)}<button class="btn mag" data-o="${WEBSITES.indexOf(p)}" data-cur="View">View project →</button></div></article>`,
-        ).join("");
-        $("#pt").textContent = nn(F.length - 1);
-        $("#sel").style.height = MOB() ? "auto" : F.length * 100 + "svh";
-        const cats = [...new Set(WEBSITES.map((p) => p.cat).filter(Boolean))];
-        $("#flt").innerHTML = ["All", ...cats]
-          .map(
-            (c, i) =>
-              `<button aria-pressed="${!i}" data-c="${c}">${c}</button>`,
-          )
-          .join("");
-        $("#list").innerHTML = WEBSITES.map(
-          (p, i) =>
-            `<article class="pr r${i % 4}" data-c="${p.cat || ""}">${frame(p, i)}<div><span class="num mono">${nn(i)}</span><h3 class="mk2">${p.name}</h3>${p.cat ? `<small class="mono">${p.cat}</small>` : ""}<p class="hx">${p.desc}</p>${tech(p)}<div class="acts"><button class="btn mag" data-o="${i}" data-cur="View">View project</button>${p.url ? `<a class="btn p mag" href="${p.url}" target="_blank" rel="noopener" data-cur="Open ↗">Visit live website ↗</a>` : ""}${p.gh ? `<a class="btn mag" href="${p.gh}" target="_blank" rel="noopener" data-cur="Open ↗">View code ↗</a>` : ""}</div></div></article>`,
-        ).join("");
-        bind();
-        watch();
-        onS();
-      }
-      function bind() {
-        $$("[data-o]").forEach((b) => (b.onclick = () => openP(+b.dataset.o)));
-        $$("#flt button").forEach(
-          (b) =>
-            (b.onclick = () => {
-              $$("#flt button").forEach((x) =>
-                x.setAttribute("aria-pressed", x === b),
-              );
-              $$(".pr").forEach((r) => {
-                const show =
-                  b.dataset.c === "All" || r.dataset.c === b.dataset.c;
-                if (show) {
-                  r.hidden = false;
-                  requestAnimationFrame(() => r.classList.remove("off"));
-                } else {
-                  r.classList.add("off");
-                  setTimeout(
-                    () => r.classList.contains("off") && (r.hidden = true),
-                    320,
-                  );
-                }
-              });
-            }),
-        );
-        $$("[data-tilt]").forEach((f) => {
-          f.onpointermove = (e) => {
-            if (RM || !FINE) return;
-            const r = f.getBoundingClientRect(),
-              x = (e.clientX - r.left) / r.width - 0.5,
-              y = (e.clientY - r.top) / r.height - 0.5;
-            f.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
-          };
-          f.onpointerleave = () => (f.style.transform = "");
+        /* values arrive HTML-escaped from Django; textContent needs the plain text back */
+        const dec = (s) => {
+          const t = document.createElement("textarea");
+          t.innerHTML = s == null ? "" : s;
+          return t.value;
+        };
+
+        /* ---------- nav + menu ---------- */
+        const nav = $("#nav"),
+          burger = $("#bg"),
+          menu = $("#lk");
+        const setMenu = (open) => {
+          nav.classList.toggle("open", open);
+          burger.setAttribute("aria-expanded", String(open));
+          burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        };
+        burger.addEventListener("click", () => setMenu(!nav.classList.contains("open")));
+        menu.addEventListener("click", (e) => {
+          if (e.target.closest("a")) setMenu(false);
         });
-        $$(".scr.cl").forEach((s) => io.observe(s));
-        cursorBind();
-      }
-      /* modal */
-      let ci = 0,
-        cn = 0;
-      function openP(i) {
-        const p = WEBSITES[i],
-          sl = (p.imgs && p.imgs.length ? p.imgs : [p.img]).filter(
-            (x, k, a) => x || a.length === 1,
-          );
-        cn = sl.length;
-        ci = 0;
-        $("#dt").textContent = p.name;
-        $("#ctr").innerHTML = sl
-          .map(
-            (s) =>
-              `<div class="fr" id="mf">${'<div class="bar"><b></b><b></b><b></b><span>' + host(p.url) + "</span></div>"}<div class="scr">${s ? `<img loading="lazy" src="${s}" alt="${p.name} screenshot">` : '<div class="mk"><i></i><i></i><i></i><i></i></div>'}</div></div>`,
-          )
-          .join("");
-        $("#cnn").innerHTML =
-          cn > 1
-            ? `<button aria-label="Previous screenshot" id="cp">←</button><span class="mono" id="cc"></span><button aria-label="Next screenshot" id="cx">→</button>`
-            : "";
-        if (cn > 1) {
-          $("#cp").onclick = () => go(-1);
-          $("#cx").onclick = () => go(1);
+        document.addEventListener("click", (e) => {
+          if (nav.classList.contains("open") && !e.target.closest("#nav")) setMenu(false);
+        });
+        matchMedia("(min-width:768px)").addEventListener("change", () => setMenu(false));
+
+        /* ---------- reveal ---------- */
+        const io = new IntersectionObserver(
+          (es) =>
+            es.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                io.unobserve(e.target);
+              }
+            }),
+          { threshold: 0.2 },
+        );
+        $$("#wh,.rv").forEach((x) => io.observe(x));
+        /* hero words animate on load (the class used to be hard-coded in the markup, so they never actually animated) */
+        requestAnimationFrame(() => requestAnimationFrame(() => $("#intro").classList.add("in")));
+
+        /* ---------- project markup ---------- */
+        const host = (u) => {
+          try {
+            return new URL(u).host;
+          } catch {
+            return "preview";
+          }
+        };
+        const PH = '<div class="mk"><i></i><i></i><i></i><i></i></div>';
+        const frame = (p, idx) =>
+          `<div class="fr" data-o="${idx}" data-tilt data-cur="Explore"><div class="bar"><b></b><b></b><b></b><span>${host(p.url)}</span></div><div class="scr cl">${p.img ? `<img loading="lazy" decoding="async" src="${p.img}" alt="${p.name} screenshot">` : PH}</div></div>`;
+        const tech = (p) => `<div class="tech">${(p.tech || []).map((t) => `<i>${t}</i>`).join("")}</div>`;
+        const nn = (i) => String(Math.max(0, i) + 1).padStart(2, "0");
+
+        /* horizontal showcase is "static" (a normal swipe row) on phones, with reduced motion, or with < 2 featured projects */
+        function setSel() {
+          const s = $("#sel");
+          if (s.hidden) return;
+          const st = MOB() || RM || F.length < 2;
+          s.classList.toggle("static", st);
+          s.style.height = st ? "" : F.length * 100 + "svh";
+          if (st) $("#trk").style.transform = "";
         }
-        go(0);
-        $$(".dv button").forEach(
-          (b) =>
-            (b.onclick = () => {
-              $$(".dv button").forEach((x) =>
-                x.setAttribute("aria-pressed", x === b),
-              );
-              $$("#ctr .fr").forEach((f) => (f.style.maxWidth = b.dataset.w));
-            }),
-        );
-        $("#dd").innerHTML =
-          `<p style="color:var(--mut);margin-top:0">${p.long || p.desc}</p>${p.cat ? `<small class="mono num">${p.cat}</small>` : ""}<h3 style="font-size:1rem;margin:16px 0 8px">Technologies</h3>${tech(p)}${p.feat && p.feat.length ? `<h3 style="font-size:1rem;margin:16px 0 8px">Key features</h3><ul style="color:var(--mut);padding-left:18px;margin:0 0 20px">${p.feat.map((f) => `<li>${f}</li>`).join("")}</ul>` : ""}${p.url ? `<a class="btn p" href="${p.url}" target="_blank" rel="noopener">Visit live website ↗</a>` : ""}${p.gh ? `<a class="btn" style="margin-left:8px" href="${p.gh}" target="_blank" rel="noopener">View code ↗</a>` : ""}`;
-        $$(".dv button")[0].click();
-        $("#dg").showModal();
-      }
-      function go(d) {
-        ci = (ci + d + cn) % cn;
-        $("#ctr").style.transform = `translateX(-${ci * 100}%)`;
-        const c = $("#cc");
-        if (c) c.textContent = nn(ci) + " / " + nn(cn - 1);
-      }
-      $("#dc").onclick = () => $("#dg").close();
-      $("#dg").addEventListener("click", (e) => {
-        if (e.target.id === "dg") e.target.close();
-      });
-      $("#dg").addEventListener("keydown", (e) => {
-        if (cn > 1 && e.key === "ArrowRight") go(1);
-        if (cn > 1 && e.key === "ArrowLeft") go(-1);
-      });
-      
-      /* scroll: horizontal showcase + kinetic words + hero parallax */
-      function onS() {
-        const s = $("#sel");
-        if (s.hidden || MOB() || RM) return;
-        const t = $("#trk"),
-          n = t.children.length,
-          r = s.getBoundingClientRect(),
-          p = Math.min(1, Math.max(0, -r.top / (s.offsetHeight - innerHeight)));
-        t.style.transform = `translateX(${-p * (n - 1) * 100}vw)`;
-        $("#pf").style.width = p * 100 + "%";
-        $("#pn").textContent = nn(Math.min(n - 1, Math.round(p * (n - 1))));
-      }
-      const ks = $$(".k");
-      function kin() {
-        ks.forEach((k) => {
-          k.classList.toggle(
-            "on",
-            k.getBoundingClientRect().top < innerHeight * 0.62,
-          );
+        function render() {
+          const has = WEBSITES.length;
+          $("#empty").hidden = !!has;
+          $("#work").hidden = !has;
+          $("#sel").hidden = !F.length;
+          if (!has) return;
+          if (F.length) {
+            $("#trk").innerHTML = F.map((p, i) => {
+              const idx = WEBSITES.indexOf(p);
+              return `<article class="sl"><div class="in">${frame(p, idx)}</div><div><span class="num mono">${nn(i)}</span><h3>${p.name}</h3><p>${p.desc}</p>${tech(p)}<button type="button" class="btn mag" data-o="${idx}" data-cur="View">View project →</button></div></article>`;
+            }).join("");
+            $("#pt").textContent = nn(F.length - 1);
+          }
+          setSel();
+          const cats = [...new Set(WEBSITES.map((p) => p.cat).filter(Boolean))];
+          $("#flt").innerHTML = ["All", ...cats].map((c, i) => `<button type="button" aria-pressed="${!i}" data-c="${c}">${c}</button>`).join("");
+          $("#list").innerHTML = WEBSITES.map(
+            (p, i) =>
+              `<article class="pr r${i % 4}" data-c="${p.cat || ""}">${frame(p, i)}<div><span class="num mono">${nn(i)}</span><h3 class="mk2">${p.name}</h3>${p.cat ? `<small class="mono">${p.cat}</small>` : ""}<p class="hx">${p.desc}</p>${tech(p)}<div class="acts"><button type="button" class="btn mag" data-o="${i}" data-cur="View">View project</button>${p.url ? `<a class="btn p mag" href="${p.url}" target="_blank" rel="noopener noreferrer" data-cur="Open ↗">Visit live website ↗</a>` : ""}${p.gh ? `<a class="btn mag" href="${p.gh}" target="_blank" rel="noopener noreferrer" data-cur="Open ↗">View code ↗</a>` : ""}</div></div></article>`,
+          ).join("");
+          $$(".scr.cl,.pr").forEach((x) => io.observe(x));
+        }
+
+        /* ---------- filters (delegated: one listener, survives re-renders) ---------- */
+        $("#flt").addEventListener("click", (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          $$("#flt button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+          $$(".pr").forEach((r) => {
+            const show = b.dataset.c === "All" || r.dataset.c === b.dataset.c;
+            if (show) {
+              r.hidden = false;
+              requestAnimationFrame(() => r.classList.remove("off"));
+            } else {
+              r.classList.add("off");
+              setTimeout(() => r.classList.contains("off") && (r.hidden = true), 320);
+            }
+          });
         });
-      }
-      addEventListener(
-        "scroll",
-        () => {
-          onS();
-          kin();
-        },
-        { passive: true },
-      );
-      addEventListener("resize", () => {
-        if (!$("#sel").hidden) render();
-      });
-      const sc = $("#sc");
-      if (!RM && FINE)
+
+        /* ================= MODAL ================= */
+        const dg = $("#dg"),
+          body = document.body,
+          cur = $("#cur");
+        let ci = 0,
+          cn = 0,
+          opener = null,
+          modalOpen = false,
+          downOnBackdrop = false;
+
+        function setDevice(btn) {
+          $$(".dv button").forEach((x) => x.setAttribute("aria-pressed", String(x === btn)));
+          $$("#ctr .fr").forEach((f) => (f.style.maxWidth = btn.dataset.w));
+        }
+        function go(d) {
+          ci = (ci + d + cn) % cn;
+          $("#ctr").style.transform = `translateX(-${ci * 100}%)`;
+          const c = $("#cc");
+          if (c) c.textContent = nn(ci) + " / " + nn(cn - 1);
+        }
+        function openP(i, from) {
+          const p = WEBSITES[i];
+          if (!p || modalOpen) return;
+          const shots = (p.imgs && p.imgs.length ? p.imgs : [p.img]).filter((x, k, a) => x || a.length === 1);
+          cn = shots.length;
+          ci = 0;
+          $("#dt").textContent = dec(p.name);
+          const cat = $("#dcat");
+          cat.textContent = dec(p.cat);
+          cat.hidden = !p.cat;
+          $("#ctr").style.transform = "";
+          $("#ctr").innerHTML = shots
+            .map(
+              (s, k) =>
+                `<div class="sld"><div class="fr"><div class="bar"><b></b><b></b><b></b><span>${host(p.url)}</span></div><div class="scr">${s ? `<img ${k ? 'loading="lazy" ' : ""}decoding="async" src="${s}" alt="${p.name} screenshot ${shots.length > 1 ? k + 1 : ""}">` : PH}</div></div></div>`,
+            )
+            .join("");
+          $("#cnn").innerHTML =
+            cn > 1
+              ? `<button type="button" aria-label="Previous screenshot" id="cp">←</button><span class="mono" id="cc" aria-live="polite"></span><button type="button" aria-label="Next screenshot" id="cx">→</button>`
+              : "";
+          if (cn > 1) {
+            $("#cp").onclick = () => go(-1);
+            $("#cx").onclick = () => go(1);
+          }
+          go(0);
+          setDevice($(".dv button"));
+          const desc = p.long || p.desc;
+          $("#dd").innerHTML =
+            `<div class="dsec"><p class="long">${desc}</p></div>` +
+            ((p.tech || []).length ? `<div class="dsec"><h3>Technologies</h3>${tech(p)}</div>` : "") +
+            (p.feat && p.feat.length ? `<div class="dsec"><h3>Key features</h3><ul class="feat">${p.feat.map((f) => `<li>${f}</li>`).join("")}</ul></div>` : "") +
+            (p.url || p.gh
+              ? `<div class="macts">${p.url ? `<a class="btn p" href="${p.url}" target="_blank" rel="noopener noreferrer">Visit live website ↗</a>` : ""}${p.gh ? `<a class="btn" href="${p.gh}" target="_blank" rel="noopener noreferrer">View code ↗</a>` : ""}</div>`
+              : "");
+
+          /* remember who opened it (cards use a plain div as a mouse shortcut, so fall back to its button) */
+          opener = from && from.matches("button") ? from : (from && from.closest(".pr,.sl") && from.closest(".pr,.sl").querySelector("button[data-o]")) || from || document.activeElement;
+          modalOpen = true;
+          root.classList.add("lock");
+          /* the custom cursor lives below the top layer: hide it and bring back the native pointer inside the modal */
+          body.classList.remove("cc");
+          cur.style.opacity = 0;
+          cur.classList.remove("big");
+          cur.textContent = "";
+          dg.showModal();
+          $("#mbody").scrollTop = 0;
+        }
+        function closeP() {
+          if (!dg.open || dg.classList.contains("closing")) return;
+          if (RM) return dg.close();
+          dg.classList.add("closing");
+          setTimeout(() => dg.close(), 200);
+        }
+        dg.addEventListener("close", () => {
+          dg.classList.remove("closing");
+          modalOpen = false;
+          root.classList.remove("lock");
+          if (CURSOR) body.classList.add("cc");
+          if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+        });
+        dg.addEventListener("cancel", (e) => {
+          e.preventDefault(); /* Esc: close through the same animated path */
+          closeP();
+        });
+        $("#dc").addEventListener("click", closeP);
+        /* backdrop: only when the press AND the release both happened outside the dialog box */
+        const outside = (e) => {
+          const r = dg.getBoundingClientRect();
+          return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+        };
+        dg.addEventListener("pointerdown", (e) => (downOnBackdrop = outside(e)));
+        dg.addEventListener("click", (e) => {
+          if (downOnBackdrop && outside(e)) closeP();
+          downOnBackdrop = false;
+        });
+        dg.addEventListener("keydown", (e) => {
+          if (cn > 1 && e.key === "ArrowRight") go(1);
+          if (cn > 1 && e.key === "ArrowLeft") go(-1);
+        });
+        $$(".dv button").forEach((b) => b.addEventListener("click", () => setDevice(b)));
+        /* swipe between screenshots on touch screens */
+        let sx = null;
+        const cv = $(".cv");
+        cv.addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
+        cv.addEventListener("touchend", (e) => {
+          if (sx === null || cn < 2) return;
+          const dx = e.changedTouches[0].clientX - sx;
+          sx = null;
+          if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+        });
+        /* ONE delegated opener for every card, button and preview frame */
+        document.addEventListener("click", (e) => {
+          const o = e.target.closest("[data-o]");
+          if (!o || dg.contains(o)) return;
+          e.preventDefault();
+          openP(+o.dataset.o, o);
+        });
+
+        /* ---------- scroll: nav, horizontal showcase, kinetic words (one rAF-throttled handler) ---------- */
+        function onS() {
+          const s = $("#sel");
+          if (s.hidden || s.classList.contains("static")) return;
+          const t = $("#trk"),
+            n = t.children.length,
+            span = s.offsetHeight - innerHeight;
+          if (span <= 0) return;
+          const p = Math.min(1, Math.max(0, -s.getBoundingClientRect().top / span));
+          t.style.transform = `translateX(${-p * (n - 1) * 100}vw)`;
+          $("#pf").style.width = p * 100 + "%";
+          $("#pn").textContent = nn(Math.min(n - 1, Math.round(p * (n - 1))));
+        }
+        const ks = $$(".k");
+        const kin = () => ks.forEach((k) => k.classList.toggle("on", k.getBoundingClientRect().top < innerHeight * 0.62));
+        let tick = false;
         addEventListener(
-          "pointermove",
-          (e) => {
-            sc.style.transform = `rotateY(${(e.clientX / innerWidth - 0.5) * 10}deg) rotateX(${-(e.clientY / innerHeight - 0.5) * 7}deg)`;
+          "scroll",
+          () => {
+            if (tick) return;
+            tick = true;
+            requestAnimationFrame(() => {
+              tick = false;
+              nav.classList.toggle("sc", scrollY > 30);
+              onS();
+              kin();
+            });
           },
           { passive: true },
         );
-      /* cursor + magnetic */
-      const cur = $("#cur");
-      let cx = 0,
-        cy = 0,
-        tx = 0,
-        ty = 0;
-      function cursorBind() {
-        if (!FINE || RM) return;
-        document.body.classList.add("cc");
-        $$("[data-cur]").forEach((e) => {
-          e.onpointerenter = () => {
-            cur.classList.add("big");
-            cur.textContent = e.dataset.cur;
-          };
-          e.onpointerleave = () => {
-            cur.classList.remove("big");
-            cur.textContent = "";
-          };
+        let rt = 0;
+        addEventListener("resize", () => {
+          clearTimeout(rt);
+          rt = setTimeout(() => {
+            setSel();
+            onS();
+            kin();
+          }, 120);
         });
-        $$(".mag").forEach((m) => {
-          m.onpointermove = (e) => {
-            const r = m.getBoundingClientRect();
-            m.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.2}px,${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
-          };
-          m.onpointerleave = () => (m.style.transform = "");
-        });
-      }
-      if (FINE && !RM) {
-        addEventListener("pointermove", (e) => {
-          tx = e.clientX;
-          ty = e.clientY;
-          cur.style.opacity = 1;
-        });
-        (function f() {
+
+        /* ---------- hero parallax ---------- */
+        const sc = $("#sc");
+        if (CURSOR) {
+          let pf = 0,
+            hx = 0,
+            hy = 0;
+          addEventListener(
+            "pointermove",
+            (e) => {
+              hx = e.clientX;
+              hy = e.clientY;
+              if (pf || modalOpen) return;
+              pf = requestAnimationFrame(() => {
+                pf = 0;
+                if (scrollY < innerHeight) sc.style.transform = `rotateY(${(hx / innerWidth - 0.5) * 10}deg) rotateX(${-(hy / innerHeight - 0.5) * 7}deg)`;
+              });
+            },
+            { passive: true },
+          );
+        }
+
+        /* ---------- custom cursor + magnetic buttons + tilt (never active inside the modal) ---------- */
+        let cx = 0,
+          cy = 0,
+          tx = 0,
+          ty = 0,
+          craf = 0;
+        const cloop = () => {
           cx += (tx - cx) * 0.2;
           cy += (ty - cy) * 0.2;
           cur.style.transform = `translate(${cx}px,${cy}px)`;
-          requestAnimationFrame(f);
-        })();
-      }
-      watch();
-      render();
-      kin();
+          craf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.2 ? requestAnimationFrame(cloop) : 0;
+        };
+        if (CURSOR) {
+          body.classList.add("cc");
+          addEventListener(
+            "pointermove",
+            (e) => {
+              if (modalOpen) return;
+              tx = e.clientX;
+              ty = e.clientY;
+              cur.style.opacity = 1;
+              if (!craf) craf = requestAnimationFrame(cloop);
+            },
+            { passive: true },
+          );
+          document.addEventListener("pointerover", (e) => {
+            const t = !modalOpen && e.target.closest && e.target.closest("[data-cur]");
+            if (t) {
+              cur.classList.add("big");
+              cur.textContent = t.dataset.cur;
+            }
+          });
+          document.addEventListener("pointerout", (e) => {
+            const t = e.target.closest && e.target.closest("[data-cur]");
+            if (t && !t.contains(e.relatedTarget)) {
+              cur.classList.remove("big");
+              cur.textContent = "";
+            }
+          });
+        }
+        function bindFx() {
+          $$(".mag").forEach((m) => {
+            if (!CURSOR) return;
+            m.onpointermove = (e) => {
+              const r = m.getBoundingClientRect();
+              m.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.2}px,${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
+            };
+            m.onpointerleave = () => (m.style.transform = "");
+          });
+          $$("[data-tilt]").forEach((f) => {
+            f.onpointermove = (e) => {
+              if (RM || !FINE) return;
+              const r = f.getBoundingClientRect(),
+                x = (e.clientX - r.left) / r.width - 0.5,
+                y = (e.clientY - r.top) / r.height - 0.5;
+              f.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+            };
+            f.onpointerleave = () => (f.style.transform = "");
+          });
+        }
+
+        render();
+        bindFx();
+        onS();
+        kin();
+      })();
     </script>
+
   </body>
 </html>

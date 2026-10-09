@@ -34,6 +34,9 @@ TEMPLATES_MYAPP1_DIRS = os.path.join(BASE_DIR / 'dashboard_app/templates')
 # ---------------------------------------------------------------- Security basics
 DEBUG = env_bool('DEBUG', False)           # DEBUG hamesha False rakhte hain, local .env mein True kar lena
 
+# DEBUG=True par bhi apna custom 404 page dikhana hai? False karoge to Django ka peela debug 404 page aayega
+CUSTOM_404_IN_DEBUG = env_bool('CUSTOM_404_IN_DEBUG', True)
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     if DEBUG:
@@ -81,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'portfolio_project.errors.Custom404InDebugMiddleware',   # local (DEBUG=True) par bhi custom 404 page dikhata hai
 ]
 
 ROOT_URLCONF = 'portfolio_project.urls'

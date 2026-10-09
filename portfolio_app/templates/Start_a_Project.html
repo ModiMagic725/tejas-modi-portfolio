@@ -324,9 +324,7 @@
       .an.show {
         opacity: 1;
       }
-      #bg2 {
-        transition: transform 0.3s linear;
-      }
+      #bg2 { display: block; }
       .stp {
         display: flex;
         margin: 0 0 30px;
@@ -1007,6 +1005,38 @@
           opacity: 1;
         }
       }
+      /* ---- fixes & polish ---- */
+      .bn.cur.fill rect, .bn.cur.fill circle, .bn.cur.fill path { fill: rgba(229, 199, 155, 0.16); }
+      .bp { contain: layout paint; box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.7); }
+      .bp svg { max-height: calc(100vh - 140px); }
+      .stp li:last-child { flex: 0 0 29px; }
+      .stp span { white-space: nowrap; }
+      .card { box-shadow: 0 28px 70px -40px rgba(0, 0, 0, 0.8); }
+      .fld input, .fld textarea { min-height: 48px; min-width: 0; overflow-wrap: anywhere; }
+      .fld textarea { min-height: 130px; }
+      .fld.big textarea { min-height: 190px; }
+      .bad input, .bad textarea { box-shadow: 0 0 0 1px var(--sd); }
+      .er { min-height: 0; }
+      .btn { min-height: 44px; }
+      .btn.p:hover { transform: translateY(-1px); }
+      .btn.busy:before { content: ""; width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .lk input { min-width: 0; }
+      .fl li { grid-template-columns: minmax(0, 1fr) auto auto; }
+      .fl .nm, .rv dd { overflow-wrap: anywhere; }
+      .fl button { min-height: 36px; min-width: 64px; }
+      @media (min-width: 992px) and (max-width: 1100px) { .ig { grid-template-columns: 0.8fr 1.2fr; gap: 32px; } }
+      @media (max-width: 991px) {
+        .ig { gap: 32px; }
+        .bp { display: block; position: static; order: 2; width: 100%; max-width: 360px; margin: 0 auto; }
+        .bp svg { max-height: none; }
+      }
+      @media (max-width: 380px) {
+        .wrap { padding: 0 16px; }
+        .card { padding: 20px 14px; }
+        .chip span { padding: 10px 12px; }
+      }
+      @media (max-height: 520px) and (orientation: landscape) { .bp { position: static; } #top { padding-top: 100px; } }
     </style>
   </head>
   <body>
@@ -1058,18 +1088,9 @@
       <section id="intake">
         <div class="wrap ig">
           <aside class="bp" id="bp" aria-hidden="true">
-            <svg viewBox="0 0 320 440" id="bg2">
-              <path
-                class="l"
-                pathLength="1"
-                d="M160 66V104M160 150V188M160 238V276M160 322V360"
-              />
-              <path
-                class="l"
-                pathLength="1"
-                d="M20 20H300M20 420H300"
-                stroke-opacity=".4"
-              />
+            <svg viewBox="0 0 320 460" id="bg2" focusable="false">
+              <path class="l" pathLength="1" d="M160 66V104M160 150V188M160 264V290M160 368V384" />
+              <path class="l" pathLength="1" d="M20 20H300M20 448H300" stroke-opacity=".4" />
               <g class="bn" data-n="1">
                 <circle cx="160" cy="44" r="22" />
                 <text x="160" y="48" text-anchor="middle">IDEA</text>
@@ -1084,21 +1105,19 @@
                 <rect x="70" y="190" width="56" height="48" />
                 <rect x="132" y="190" width="56" height="48" />
                 <rect x="194" y="190" width="56" height="48" />
-                <text x="160" y="268" text-anchor="middle">FEATURES</text>
+                <text x="160" y="256" text-anchor="middle">FEATURES</text>
               </g>
               <text class="an" x="258" y="216" id="a3">03</text>
               <g class="bn" data-n="4">
-                <path
-                  d="M120 288v26c0 8 18 12 40 12s40-4 40-12v-26c0-8-18-12-40-12s-40 4-40 12z"
-                />
-                <text x="160" y="346" text-anchor="middle">SYSTEM</text>
+                <path d="M120 304v26c0 8 18 12 40 12s40-4 40-12v-26c0-8-18-12-40-12s-40 4-40 12z" />
+                <text x="160" y="362" text-anchor="middle">SYSTEM</text>
               </g>
-              <text class="an" x="212" y="306" id="a4">04 · FILES</text>
+              <text class="an" x="212" y="322" id="a4">04 · FILES</text>
               <g class="bn" data-n="5">
-                <rect x="100" y="362" width="120" height="44" />
-                <text x="160" y="388" text-anchor="middle">BUILD</text>
+                <rect x="100" y="384" width="120" height="44" />
+                <text x="160" y="410" text-anchor="middle">BUILD</text>
               </g>
-              <text class="an" x="228" y="388" id="a5">05 · REVIEW</text>
+              <text class="an" x="228" y="410" id="a5">05 · REVIEW</text>
             </svg>
           </aside>
 
@@ -1265,7 +1284,7 @@
                   <span class="mono sd">STEP 04</span>
                   <h2 tabindex="-1">Share your references</h2>
                   <div class="fld">
-                    <label>Reference links (optional)</label>
+                    <label for="lk0">Reference links (optional)</label>
                     <div id="lks"></div>
                     <button type="button" class="btn g" id="al">
                       + Add a link
@@ -1528,6 +1547,7 @@
           g.classList.toggle("cur", i === n);
         });
         $$(".an").forEach((a, i) => a.classList.toggle("show", i + 1 === n));
+        sync();
         $("#bk").hidden = n === 1;
         $("#nx").hidden = n === 5;
         $("#sb").hidden = n !== 5;
@@ -1580,6 +1600,8 @@
           x.classList.remove("bad");
           const i = x.querySelector("input,textarea");
           i && i.removeAttribute("aria-invalid");
+          const e0 = x.querySelector(".er");
+          if (e0 && e0.id !== "efl") e0.style.display = "";
         });
         E.forEach(([id, m]) => {
           const el = $("#" + id);
@@ -1587,6 +1609,7 @@
           const box = el.closest(".fld,.fs");
           box.classList.add("bad");
           let er = box.querySelector(".er");
+          if (!er) { er = document.createElement("div"); er.className = "er"; box.appendChild(er); }
           er.textContent = m;
           er.style.display = "block";
           if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
@@ -1676,6 +1699,7 @@
           (f, i) =>
             `<li><span class="nm">${f.name.replace(/[<>&"]/g, "")}</span><small>${(f.name.split(".").pop() || "").toUpperCase()} · ${sz(f.size)}</small><button type="button" data-r="${i}" aria-label="Remove ${f.name.replace(/[<>&"]/g, "")}">Remove</button></li>`,
         ).join("");
+        sync();
         $$("[data-r]").forEach(
           (b) =>
             (b.onclick = () => {
@@ -1796,6 +1820,8 @@
         if (b.disabled) return;
         b.disabled = true;
         b.textContent = "Submitting…";
+        b.classList.add("busy");
+        b.setAttribute("aria-busy", "true");
         F.classList.add("sub2");
         prog(0);
         say("Submitting project brief");
@@ -1814,19 +1840,32 @@
           $("#ok").focus();
           say("Project brief received");
         } catch (x) {
-          $("#bm").textContent =
-            x && x.net
-              ? "Network error. Please check your connection and try again. Your brief is still saved in the form."
-              : ENDPOINT || DEMO
-                ? "Something went wrong on our side. Please try again. Your brief is still saved in the form."
-                : "This prototype is not connected to Django yet, so nothing was sent. Your brief is still saved in the form.";
-          F.hidden = true;
-          $("#bad").classList.add("on");
-          $("#bad").focus();
-          say("Project brief could not be sent");
+          const MAP = { client_name: "cn", email: "ce", phone: "cp", company: "cc", project_name: "pn", project_type: "ept", project_description: "pd", features: "ft", additional_requirements: "ar", budget_range: "bd", desired_timeline: "tl", files: "efl", links: "elk" };
+          const list = x && x.errors ? Object.entries(x.errors).filter(([k]) => MAP[k]).map(([k, m]) => [MAP[k], m]) : [];
+          if (list.length) {
+            /* Server-side validation failed: send the visitor to the first affected step, nothing is cleared */
+            const step = (id) => +$("#" + id).closest(".pn").dataset.s;
+            list.sort((a, b) => step(a[0]) - step(b[0]));
+            const n = step(list[0][0]);
+            go(n, false);
+            mark(list.filter((e) => step(e[0]) === n), n);
+            $("#card").scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" });
+          } else {
+            $("#bm").textContent =
+              (x && x.errors && x.errors.__all__) ||
+              (x && x.net
+                ? "Network error. Please check your connection and try again. Your brief is still saved in the form."
+                : "Something went wrong on our side. Please try again. Your brief is still saved in the form.");
+            F.hidden = true;
+            $("#bad").classList.add("on");
+            $("#bad").focus();
+            say("Project brief could not be sent");
+          }
         } finally {
           b.disabled = false;
           b.textContent = "Submit project brief";
+          b.classList.remove("busy");
+          b.removeAttribute("aria-busy");
           F.classList.remove("sub2");
         }
       });
@@ -1838,16 +1877,16 @@
       
       $("#gt").onclick = () =>
         setTimeout(() => $("#cn").focus({ preventScroll: true }), 600);
-      if (!RM)
-        addEventListener(
-          "pointermove",
-          (e) => {
-            if (innerWidth > 991)
-              $("#bg2").style.transform =
-                `translate(${(e.clientX / innerWidth - 0.5) * 8}px,${(e.clientY / innerHeight - 0.5) * 8}px)`;
-          },
-          { passive: true },
-        );
+      
+      /* Diagram highlights the current node more strongly once that step's required
+         fields are complete. Uses "change" (fires on blur/selection), not every keystroke. */
+      function sync() {
+        const g = $(".bn.cur");
+        if (!g) return;
+        const done = !val(cur).length && (cur !== 4 || FILES.length || $$("#lks input").some((i) => i.value.trim()));
+        g.classList.toggle("fill", !!done);
+      }
+      F.addEventListener("change", sync);
       go(1, false);
     </script>
   </body>

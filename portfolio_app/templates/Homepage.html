@@ -1047,7 +1047,7 @@
               unit = (2 * TAN * CZ) / H /* world units per CSS pixel at the model plane */,
               fit = Math.min((M.h * unit) / BH, (M.w * unit) / BW) * 0.97;
             let px, py, sc, yaw, f,
-              spin = 0;
+              spin = 0, tilt = 0, zoom = 1;
             if (wide) {
               /* desktop: model starts in the hero stage (right), then glides to the left while the About text appears on the right */
               const p = clamp(y / H, 0, 1),
@@ -1056,11 +1056,13 @@
               py = M.cy;
               sc = fit * (1 - e * 0.1);
               yaw = -0.2 + 0.4 * e; /* looks toward the hero text first, then toward the About text */
-              /* About section: one full 360° turn while scrolling through it (starts after the glide, ends before the fade) */
+              /* About section: a gentle left-right sweep while scrolling through it (starts after the glide, ends before the fade) */
               const y0 = H * 0.5,
                 y1 = M.ab - H * 1.1,
                 r = y1 > y0 + 1 ? clamp((y - y0) / (y1 - y0), 0, 1) : 0;
-              spin = RM ? 0 : r * r * (3 - 2 * r) * Math.PI * 2;
+              spin = RM ? 0 : Math.sin(r * Math.PI * 2) * 0.62;
+              tilt = RM ? 0 : Math.sin(r * Math.PI * 2 + 0.6) * 0.035; /* tiny nod, like looking around */
+              zoom = RM ? 1 : 1 + Math.sin(r * Math.PI) * 0.06; /* slow push-in at the middle of the section */ /* gentle left-right sweep (about 35 degrees each way), ends facing front. The bust is a front-only scan, so it must never turn far enough to show its hollow back */
               f = 1 - clamp((y - (M.ab - H)) / (H * 0.8), 0, 1);
             } else {
               /* mobile: anchored to its own stage box, scrolls away with the page, never overlaps text */
@@ -1074,7 +1076,8 @@
             }
             cv.style.opacity = f;
             if (f <= 0) return 0;
-            const k = snapNext ? 1 : 1 - Math.exp(-dt * 5),
+            sc *= zoom;
+            const k = snapNext ? 1 : 1 - Math.exp(-dt * (wide ? 3.6 : 5)), /* softer easing = silkier motion */
               ky = wide ? k : 1; /* mobile: vertical position follows the scroll exactly */
             const tx = (px - W / 2) * unit,
               ty = (H / 2 - py) * unit + 0.5 * sc; /* +0.5*sc cancels the bust's own -0.5 offset so it is centred on the stage */
@@ -1084,7 +1087,9 @@
             G.scale.setScalar(s0 + (sc - s0) * k);
             const idle = RM ? 0 : Math.sin(t * 0.0006) * 0.025;
             LK.rotation.y += (clamp(yaw + idle, -0.3, 0.3) + spin - LK.rotation.y) * k;
-            LK.rotation.x = 0;
+            LK.rotation.x += (tilt - LK.rotation.x) * k;
+            r1.position.x = -4 + spin * 3; /* rim lights slide with the head, so the light feels alive */
+            r2.position.x = 4 + spin * 3;
             LK.rotation.z = 0;
             LK.position.y = RM ? 0 : Math.sin(t * 0.0011) * 0.03;
             U.m.value.set(LK.rotation.y * 2.2, 0);

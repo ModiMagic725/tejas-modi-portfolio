@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Page not found{% endblock %}
+{% block body_class %}{% if not is_logged_in %}nf-body{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nf-card {
+    max-width: 560px;
+    margin: 6vh auto 0;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 36px 28px;
+    box-shadow: var(--shadow);
+  }
+  .nf-body { display: grid; place-items: center; min-height: 100vh; padding: 20px; }
+  .nf-body .nf-card { margin: 0; width: 100%; }
+  .nf-emoji { font-size: 64px; line-height: 1; animation: nf-bob 3.5s ease-in-out infinite; }
+  .nf-badge {
+    display: inline-block;
+    margin: 14px 0 10px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: var(--bad-l);
+    color: var(--bad);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+  }
+  .nf-card h2 { font-size: 1.45rem; color: var(--ink); margin-bottom: 8px; }
+  .nf-url {
+    margin: 20px 0 0;
+    text-align: left;
+    background: var(--bg);
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+  .nf-url small { display: block; color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .nf-url code { display: block; color: var(--bad); font: 500 0.92rem/1.5 ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+  .nf-actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  @keyframes nf-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+  @media (prefers-reduced-motion: reduce) { .nf-emoji { animation: none; } }
+</style>
+{% endblock %}
+
+{# Logged-in admin: shown inside the normal dashboard layout (sidebar + topbar) #}
+{% block content %}{% include "dashboard/_404_body.html" %}{% endblock %}
+
+{# Logged-out visitor on an /admin-panel/ URL: standalone centered card #}
+{% block public %}<main id="main">{% include "dashboard/_404_body.html" %}</main>{% endblock %}

@@ -37,3 +37,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+# Custom 404 pages (portfolio + dashboard) - logic portfolio_project/errors.py mein hai
+handler404 = 'portfolio_project.errors.custom_404'
