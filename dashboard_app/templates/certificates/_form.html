@@ -9,11 +9,39 @@
         <label for="name">Certificate name <span class="req" aria-hidden="true">*</span></label>
         <input type="text" id="name" name="name" maxlength="150" required placeholder="Python Programming Certificate" value="{% if form %}{{ form.name }}{% else %}{{ cert.name }}{% endif %}">
       </div>
+      <div class="field">
+        <label for="issuer">Issuing organisation</label>
+        <input type="text" id="issuer" name="issuer" maxlength="120" placeholder="Who issued it" value="{% if form %}{{ form.issuer }}{% else %}{{ cert.issuer }}{% endif %}">
+      </div>
+      <div class="field">
+        <label for="issued_on">Issue date</label>
+        <input type="text" id="issued_on" name="issued_on" maxlength="30" aria-describedby="h-issued" placeholder="03/2024" value="{% if form %}{{ form.issued_on }}{% else %}{{ cert.issued_on }}{% endif %}">
+        <p class="hint" id="h-issued">Optional free text, shown on the About page card.</p>
+      </div>
       <div class="field span-2">
         <label for="description">Description</label>
-        <input type="text" id="description" name="description" maxlength="300" aria-describedby="h-desc" placeholder="Issued by, year or what it covers" value="{% if form %}{{ form.description }}{% else %}{{ cert.description }}{% endif %}">
-        <p class="hint" id="h-desc">Optional. One short line, up to 300 characters.</p>
+        <input type="text" id="description" name="description" maxlength="300" aria-describedby="h-desc" placeholder="What the certificate covers" value="{% if form %}{{ form.description }}{% else %}{{ cert.description }}{% endif %}">
+        <p class="hint" id="h-desc">Optional. One short line, up to 300 characters. Shown when a visitor hovers the card.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card-h"><h3>Preview image</h3></header>
+    <div class="field">
+      <label for="thumbnail">Certificate image</label>
+      {% if cert.thumbnail %}
+      <div class="doc-note">
+        <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+        <span>An image is attached. Choose a file below to replace it.</span>
+      </div>
+      <label class="check" style="margin-bottom:12px">
+        <input type="checkbox" name="remove_thumbnail"{% if form and 'remove_thumbnail' in form %} checked{% endif %}>
+        <span><strong>Remove the current image</strong><small>Ignored if you upload a new file.</small></span>
+      </label>
+      {% endif %}
+      <input type="file" id="thumbnail" name="thumbnail" accept="image/*" aria-describedby="h-thumb">
+      <p class="hint" id="h-thumb">Optional. A screenshot or scan of the certificate (landscape works best). Without it the About page shows a clean placeholder.</p>
     </div>
   </section>
 

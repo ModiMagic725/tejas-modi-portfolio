@@ -6,6 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, FileResponse, Http404
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail, EmailMessage
+from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.validators import URLValidator, validate_email
 from django.db import transaction
@@ -771,6 +773,9 @@ def add_certificate(request):
         try:
             name = request.POST.get('name', '').strip()
             description = request.POST.get('description', '').strip()
+            issuer = request.POST.get('issuer', '').strip()
+            issued_on = request.POST.get('issued_on', '').strip()
+            thumb = request.FILES.get('thumbnail')
             pdf = request.FILES.get('pdf_file')
 
             errors = []
@@ -778,6 +783,14 @@ def add_certificate(request):
                 errors.append("Certificate name is required.")
             if len(description) > 300:
                 errors.append("Description must be 300 characters or less.")
+            if len(issuer) > 120:
+                errors.append("Issuing organisation must be 120 characters or less.")
+            if len(issued_on) > 30:
+                errors.append("Issue date must be 30 characters or less.")
+            if thumb:
+                err = _file_error(_check_image, thumb)
+                if err:
+                    errors.append(err)
             if pdf:
                 err = _file_error(validate_pdf, pdf)
                 if err:
@@ -791,6 +804,9 @@ def add_certificate(request):
             cert = Certificate.objects.create(
                 name=name,
                 description=description,
+                issuer=issuer,
+                issued_on=issued_on,
+                thumbnail=thumb,
                 pdf_file=pdf,
                 is_published='is_published' in request.POST,
                 display_order=_to_int(request.POST.get('display_order')),
@@ -812,6 +828,9 @@ def edit_certificate(request, id):
         try:
             name = request.POST.get('name', '').strip()
             description = request.POST.get('description', '').strip()
+            issuer = request.POST.get('issuer', '').strip()
+            issued_on = request.POST.get('issued_on', '').strip()
+            thumb = request.FILES.get('thumbnail')
             pdf = request.FILES.get('pdf_file')
 
             errors = []
@@ -819,6 +838,14 @@ def edit_certificate(request, id):
                 errors.append("Certificate name is required.")
             if len(description) > 300:
                 errors.append("Description must be 300 characters or less.")
+            if len(issuer) > 120:
+                errors.append("Issuing organisation must be 120 characters or less.")
+            if len(issued_on) > 30:
+                errors.append("Issue date must be 30 characters or less.")
+            if thumb:
+                err = _file_error(_check_image, thumb)
+                if err:
+                    errors.append(err)
             if pdf:
                 err = _file_error(validate_pdf, pdf)
                 if err:
@@ -831,6 +858,12 @@ def edit_certificate(request, id):
 
             cert.name = name
             cert.description = description
+            cert.issuer = issuer
+            cert.issued_on = issued_on
+            if thumb:
+                cert.thumbnail = thumb
+            elif 'remove_thumbnail' in request.POST:
+                cert.thumbnail = None
             cert.is_published = 'is_published' in request.POST
             cert.display_order = _to_int(request.POST.get('display_order'))
             if pdf:
@@ -1088,6 +1121,36 @@ def _bad_email(value):
         return True
 
 
+# @require_POST
+# def contact_submit(request):
+#     if request.POST.get('website'):                       # honeypot - asli user ye field nahi bharta
+#         return JsonResponse({'ok': True})
+#     if throttled(request, 'contact', 5, 3600):
+#         return _too_many()
+
+#     name = request.POST.get('name', '').strip()
+#     email = request.POST.get('email', '').strip()
+#     subject = request.POST.get('subject', '').strip()
+#     project_type = request.POST.get('project_type', '').strip()
+#     message = request.POST.get('message', '').strip()
+
+#     errors = {}
+#     if not name or len(name) > 100:
+#         errors['name'] = 'Please tell me your name.'
+#     if _bad_email(email):
+#         errors['email'] = 'Please enter a valid email address.'
+#     if len(subject) > 150:
+#         errors['subject'] = 'Subject is too long.'
+#     if not message or len(message) > 3000:
+#         errors['message'] = 'Please tell me a little about your project (max 3000 characters).'
+#     if errors:
+#         return JsonResponse({'ok': False, 'errors': errors}, status=400)
+
+#     ContactMessage.objects.create(name=name, email=email, subject=subject, project_type=project_type[:30],
+#                                   message=message, ip_address=get_ip(request))
+#     return JsonResponse({'ok': True})
+
+
 @require_POST
 def contact_submit(request):
     if request.POST.get('website'):                       # honeypot - asli user ye field nahi bharta
@@ -1110,40 +1173,203 @@ def contact_submit(request):
         errors['subject'] = 'Subject is too long.'
     if not message or len(message) > 3000:
         errors['message'] = 'Please tell me a little about your project (max 3000 characters).'
+
     if errors:
         return JsonResponse({'ok': False, 'errors': errors}, status=400)
 
-    ContactMessage.objects.create(name=name, email=email, subject=subject, project_type=project_type[:30],
-                                  message=message, ip_address=get_ip(request))
+    ContactMessage.objects.create(
+        name=name,
+        email=email,
+        subject=subject,
+        project_type=project_type[:30],
+        message=message,
+        ip_address=get_ip(request)
+    )
+
+    # Email notification for Tejas
+    send_mail(
+        subject=f"New Portfolio Inquiry — {subject}",
+        message=f"""
+Hi Tejas,
+
+You’ve received a new message through your portfolio website.
+
+A new person has reached out regarding a potential project. Here are the details:
+
+Name: {name}
+Email: {email}
+Project Type: {project_type}
+Subject: {subject}
+
+Message:
+{message}
+
+You can reply directly to the visitor using their email address above.
+
+Best,
+Portfolio Contact System
+""",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[settings.EMAIL_HOST_USER],
+    )
+
+    # Confirmation email for the visitor
+    send_mail(
+        subject="Thanks for reaching out — Tejas Modi",
+        message=f"""
+Hi {name},
+
+Thank you for taking the time to reach out through my portfolio.
+
+I’ve received your message successfully and really appreciate your interest in working together. I’ll review your requirements and get back to you as soon as possible.
+
+Here’s a quick summary of what you submitted:
+
+Project Type: {project_type}
+Subject: {subject}
+
+Your Message:
+{message}
+
+If you need to add anything else, you can simply reply to this email.
+
+Looking forward to connecting with you.
+
+Warm regards,
+Tejas Modi
+Python Full Stack Developer
+
+Portfolio
+Python • Django • Full Stack Development
+""",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[email],
+    )
+
     return JsonResponse({'ok': True})
 
+
+
+
+# @require_POST
+# def requirement_submit(request):
+#     if request.POST.get('website'):
+#         return JsonResponse({'ok': True})
+#     if throttled(request, 'requirement', 5, 3600):
+#         return _too_many()
+
+#     p = request.POST
+#     data = {k: p.get(k, '').strip() for k in (
+#         'client_name', 'email', 'phone', 'company', 'project_name', 'project_type', 'project_description',
+#         'features', 'additional_requirements', 'budget_range', 'desired_timeline')}
+
+#     errors = {}
+#     limits = {'client_name': 100, 'phone': 25, 'company': 120, 'project_name': 120, 'project_type': 50,
+#               'project_description': 4000, 'features': 4000, 'additional_requirements': 3000,
+#               'budget_range': 80, 'desired_timeline': 80}
+#     for field in ('client_name', 'project_name', 'project_type', 'project_description', 'features'):
+#         if not data[field]:
+#             errors[field] = 'This field is required.'
+#     for field, limit in limits.items():
+#         if len(data[field]) > limit:
+#             errors[field] = f'Please keep this under {limit} characters.'
+#     if _bad_email(data['email']):
+#         errors['email'] = 'Please enter a valid email address.'
+
+#     files = request.FILES.getlist('files')
+#     if len(files) > CLIENT_MAX_FILES:
+#         errors['files'] = f'You can attach up to {CLIENT_MAX_FILES} files.'
+#     else:
+#         for f in files:
+#             err = _file_error(validate_client_file, f)
+#             if err:
+#                 errors['files'] = err
+#                 break
+
+#     links = []
+#     for url in request.POST.getlist('links')[:5]:
+#         url = url.strip()
+#         if url:
+#             try:
+#                 URLValidator(schemes=['http', 'https'])(url)
+#                 links.append(url)
+#             except ValidationError:
+#                 errors['links'] = 'Please enter full links starting with https://'
+
+#     if errors:
+#         return JsonResponse({'ok': False, 'errors': errors}, status=400)
+
+#     technologies = _tech_text(', '.join(request.POST.getlist('preferred_technologies')))
+#     with transaction.atomic():
+#         req = ProjectRequirement.objects.create(preferred_technologies=technologies, ip_address=get_ip(request), **data)
+#         for url in links:
+#             RequirementLink.objects.create(requirement=req, url=url)
+#         for f in files:
+#             RequirementFile.objects.create(requirement=req, file=f, file_size=f.size,
+#                                            original_name=get_valid_filename(f.name)[:255])
+#     return JsonResponse({'ok': True, 'message': 'Your project brief has been received.'})
 
 @require_POST
 def requirement_submit(request):
     if request.POST.get('website'):
         return JsonResponse({'ok': True})
+
     if throttled(request, 'requirement', 5, 3600):
         return _too_many()
 
     p = request.POST
-    data = {k: p.get(k, '').strip() for k in (
-        'client_name', 'email', 'phone', 'company', 'project_name', 'project_type', 'project_description',
-        'features', 'additional_requirements', 'budget_range', 'desired_timeline')}
+
+    data = {
+        k: p.get(k, '').strip()
+        for k in (
+            'client_name',
+            'email',
+            'phone',
+            'company',
+            'project_name',
+            'project_type',
+            'project_description',
+            'features',
+            'additional_requirements',
+            'budget_range',
+            'desired_timeline'
+        )
+    }
 
     errors = {}
-    limits = {'client_name': 100, 'phone': 25, 'company': 120, 'project_name': 120, 'project_type': 50,
-              'project_description': 4000, 'features': 4000, 'additional_requirements': 3000,
-              'budget_range': 80, 'desired_timeline': 80}
-    for field in ('client_name', 'project_name', 'project_type', 'project_description', 'features'):
+
+    limits = {
+        'client_name': 100,
+        'phone': 25,
+        'company': 120,
+        'project_name': 120,
+        'project_type': 50,
+        'project_description': 4000,
+        'features': 4000,
+        'additional_requirements': 3000,
+        'budget_range': 80,
+        'desired_timeline': 80
+    }
+
+    for field in (
+        'client_name',
+        'project_name',
+        'project_type',
+        'project_description',
+        'features'
+    ):
         if not data[field]:
             errors[field] = 'This field is required.'
+
     for field, limit in limits.items():
         if len(data[field]) > limit:
             errors[field] = f'Please keep this under {limit} characters.'
+
     if _bad_email(data['email']):
         errors['email'] = 'Please enter a valid email address.'
 
     files = request.FILES.getlist('files')
+
     if len(files) > CLIENT_MAX_FILES:
         errors['files'] = f'You can attach up to {CLIENT_MAX_FILES} files.'
     else:
@@ -1154,8 +1380,10 @@ def requirement_submit(request):
                 break
 
     links = []
+
     for url in request.POST.getlist('links')[:5]:
         url = url.strip()
+
         if url:
             try:
                 URLValidator(schemes=['http', 'https'])(url)
@@ -1166,15 +1394,154 @@ def requirement_submit(request):
     if errors:
         return JsonResponse({'ok': False, 'errors': errors}, status=400)
 
-    technologies = _tech_text(', '.join(request.POST.getlist('preferred_technologies')))
+    technologies = _tech_text(
+        ', '.join(request.POST.getlist('preferred_technologies'))
+    )
+
     with transaction.atomic():
-        req = ProjectRequirement.objects.create(preferred_technologies=technologies, ip_address=get_ip(request), **data)
+        req = ProjectRequirement.objects.create(
+            preferred_technologies=technologies,
+            ip_address=get_ip(request),
+            **data
+        )
+
         for url in links:
-            RequirementLink.objects.create(requirement=req, url=url)
+            RequirementLink.objects.create(
+                requirement=req,
+                url=url
+            )
+
         for f in files:
-            RequirementFile.objects.create(requirement=req, file=f, file_size=f.size,
-                                           original_name=get_valid_filename(f.name)[:255])
-    return JsonResponse({'ok': True, 'message': 'Your project brief has been received.'})
+            RequirementFile.objects.create(
+                requirement=req,
+                file=f,
+                file_size=f.size,
+                original_name=get_valid_filename(f.name)[:255]
+            )
+
+    admin_message = f"""
+Hi Tejas,
+
+You’ve received a new project inquiry through your portfolio website.
+
+A potential client has submitted a detailed project brief. Here are the requirements:
+
+CLIENT DETAILS
+-------------------------
+Name: {data['client_name']}
+Email: {data['email']}
+Phone: {data['phone']}
+Company: {data['company'] or 'Not provided'}
+
+PROJECT DETAILS
+-------------------------
+Project Name: {data['project_name']}
+Project Type: {data['project_type']}
+
+Project Description:
+{data['project_description']}
+
+Required Features:
+{data['features']}
+
+Additional Requirements:
+{data['additional_requirements'] or 'Not provided'}
+
+Budget Range:
+{data['budget_range'] or 'Not provided'}
+
+Desired Timeline:
+{data['desired_timeline'] or 'Not provided'}
+
+Preferred Technologies:
+{technologies or 'Not specified'}
+
+Project Links:
+{chr(10).join(links) if links else 'No links provided'}
+
+The submitted files, if any, are attached to this email.
+
+Project Requirement ID: {req.id}
+
+Please review the requirement from your portfolio dashboard.
+
+Best,
+Portfolio Project System
+"""
+
+    admin_email = EmailMessage(
+        subject=f"New Project Inquiry — {data['project_name']}",
+        body=admin_message,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[settings.EMAIL_HOST_USER],
+    )
+
+    for f in files:
+        f.seek(0)
+        file_content = f.read()
+
+        content_type = (
+            getattr(f, 'content_type', None)
+            or mimetypes.guess_type(f.name)[0]
+            or 'application/octet-stream'
+        )
+
+        admin_email.attach(
+            f.name,
+            file_content,
+            content_type
+        )
+
+    admin_email.send()
+
+    visitor_message = f"""
+Hi {data['client_name']},
+
+Thank you for taking the time to share your project requirements with me.
+
+I’ve successfully received your project brief and all the information you provided. I really appreciate your interest in working together.
+
+Here’s a quick summary of your submission:
+
+Project Name: {data['project_name']}
+Project Type: {data['project_type']}
+
+Project Description:
+{data['project_description']}
+
+Budget Range:
+{data['budget_range'] or 'Not provided'}
+
+Desired Timeline:
+{data['desired_timeline'] or 'Not provided'}
+
+I’ll go through your requirements carefully and get back to you soon to discuss the next steps.
+
+If you remember anything else you would like to add, you can simply send another message through the portfolio website.
+
+Looking forward to connecting with you and hopefully bringing your idea to life.
+
+Warm regards,
+Tejas Modi
+Python Full Stack Developer
+
+Portfolio
+Python • Django • Full Stack Development
+"""
+
+    send_mail(
+        subject=f"Project Brief Received — {data['project_name']}",
+        message=visitor_message,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[data['email']],
+    )
+
+    return JsonResponse({
+        'ok': True,
+        'message': 'Your project brief has been received.'
+    })
+
+
 
 
 @require_GET

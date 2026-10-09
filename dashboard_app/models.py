@@ -347,10 +347,17 @@ def certificate_pdf_path(instance, filename):
     return _random_name('certificates', filename)
 
 
+def certificate_thumb_path(instance, filename):
+    return _random_name('certificates/thumbs', filename)
+
+
 class Certificate(models.Model):
     certificate_id = models.CharField(max_length=10, unique=True, editable=False)
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=300, blank=True)
+    issuer = models.CharField(max_length=120, blank=True)        # e.g. the organisation that issued it (optional)
+    issued_on = models.CharField(max_length=30, blank=True)      # free text like "03/2024" (optional)
+    thumbnail = models.ImageField(upload_to=certificate_thumb_path, blank=True, null=True)   # preview image (optional)
     pdf_file = models.FileField(upload_to=certificate_pdf_path, blank=True, null=True)
     is_published = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=0)

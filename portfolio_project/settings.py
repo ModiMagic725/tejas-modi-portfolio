@@ -150,6 +150,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Local par email terminal mein print hoti hai. Production mein EMAIL_BACKEND environment variable se badlega.
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# ---------------------------------------------------------------- Public profile links
+# Homepage par GitHub icon tabhi dikhta hai jab ye set ho. Render > Environment mein GITHUB_URL add karo
+# (ya yahin apna link likh do), e.g. https://github.com/your-username
+GITHUB_URL = os.environ.get('GITHUB_URL', 'https://github.com/ModiMagic725')
+
 
 # ---------------------------------------------------------------- Logging
 # Production mein error ki details Render ke "Logs" tab mein dikhein, iske liye ye zaroori hai.

@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.db.models import Prefetch
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
+
 
 from dashboard_app.models import (WebsiteProject, BackendProject, Experience, Certificate,
                                   SkillCategory, Skill, Resume)
@@ -34,14 +36,42 @@ def _has_resume():
     return Resume.objects.filter(is_active=True).exists()
 
 
+# ---- Shared data: Homepage aur About dono yahin se data lete hain (single source of truth) ----
+def _experiences():
+    return Experience.objects.filter(is_published=True)
+
+
+def _skill_categories():
+    # Technical arsenal: sirf published categories, unke andar sirf published skills
+    cats = SkillCategory.objects.filter(is_published=True).prefetch_related(
+        Prefetch('skills', queryset=Skill.objects.filter(is_published=True), to_attr='live_skills'))
+    return [c for c in cats if c.live_skills]       # khaali category nahi dikhani
+
+
 # ------------------------ Homepage --------------------------
 def homepage(request):
     featured_websites = WebsiteProject.objects.filter(is_published=True, is_featured=True).prefetch_related('images')
     featured_backend = BackendProject.objects.filter(is_published=True, is_featured=True)
 
+    skill_categories = _skill_categories()
+    stack_names, seen = [], set()                   # techstack spheres ke naam (dashboard ke skills se)
+    for c in skill_categories:
+        for sk in c.live_skills:
+            if sk.name.lower() not in seen:
+                seen.add(sk.name.lower())
+                stack_names.append(sk.name)
+
     context = {
         'featured_websites': _websites_data(featured_websites),
         'featured_backend': featured_backend,
+        'experiences': _experiences(),
+        'stack_names': stack_names[:24],
+        'stats': {
+            'websites': WebsiteProject.objects.filter(is_published=True).count(),
+            'backend': BackendProject.objects.filter(is_published=True).count(),
+            'skills': len(stack_names),
+        },
+        'github_url': getattr(settings, 'GITHUB_URL', ''),
         'has_resume': _has_resume(),
     }
     return render(request, 'Homepage.html', context)
@@ -49,18 +79,12 @@ def homepage(request):
 
 # ------------------------ About --------------------------
 def about(request):
-    experiences = Experience.objects.filter(is_published=True)
-    certificates = Certificate.objects.filter(is_published=True)
-
-    # Technical arsenal: sirf published categories, unke andar sirf published skills
-    skill_categories = SkillCategory.objects.filter(is_published=True).prefetch_related(
-        Prefetch('skills', queryset=Skill.objects.filter(is_published=True), to_attr='live_skills'))
-    skill_categories = [c for c in skill_categories if c.live_skills]       # khaali category nahi dikhani
-
+    skill_categories = _skill_categories()
     context = {
-        'experiences': experiences,
-        'certificates': certificates,
+        'experiences': _experiences(),
+        'certificates': Certificate.objects.filter(is_published=True),
         'skill_categories': skill_categories,
+        'skills_count': sum(len(c.live_skills) for c in skill_categories),   # hero highlight
         'has_resume': _has_resume(),
     }
     return render(request, 'About.html', context)
