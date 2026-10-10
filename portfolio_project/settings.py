@@ -162,6 +162,8 @@ EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Render free plan par SMTP block hota hai -> EMAIL_BACKEND=dashboard_app.email_backends.BrevoAPIEmailBackend set karo (HTTPS API)
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 
 
 # ---------------------------------------------------------------- Public profile links
