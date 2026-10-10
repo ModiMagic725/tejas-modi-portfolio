@@ -868,7 +868,7 @@
                 For scope, budget, deadline and file attachments, use the
                 dedicated requirements form.
               </p>
-              <a class="btn" href="{% url 'start_a_project' %}"\1
+              <a class="btn" href="{% url 'start_a_project' %}"
                 >Submit project requirements <span>→</span></a
               >
             </div>
@@ -1070,7 +1070,7 @@
                 flex-wrap: wrap;
               "
             >
-              <a class="btn p mag" href="{% url 'start_a_project' %}"\1
+              <a class="btn p mag" href="{% url 'start_a_project' %}"
                 >Start a project <span>→</span></a
               ><a class="btn mag" href="#form" id="sm"
                 >Send a message <span>→</span></a
@@ -1230,9 +1230,11 @@
             F.reset();
           } else throw j;
         } catch (x) {
+          console.error("Contact form error:", x);
+          const why = x && x.errors ? Object.values(x.errors)[0] : "";
           $("#bm").textContent =
             ENDPOINT || DEMO
-              ? "Please try again. Your message is still in the form."
+              ? (why ? why + " Your message is still in the form." : "Please try again. Your message is still in the form.")
               : "This prototype is not connected to Django yet, so nothing was sent. Your message is still in the form.";
           say("Message could not be sent");
           show("#bad");

@@ -1,3 +1,4 @@
+import logging
 import mimetypes
 import re
 from datetime import datetime
@@ -22,6 +23,22 @@ from .decorators import login_required, role_required
 from .utils import get_ip, throttled
 from .validators import (validate_client_file, validate_pdf, validate_image,
                          validate_github_url, CLIENT_MAX_FILES)
+
+
+logger = logging.getLogger(__name__)
+
+
+def _try_email(label, send):
+    """
+    Email bhejne ki koshish karta hai, kabhi exception bahar nahi phenkta.
+    True = bhej diya, False = fail (sirf error ka type/short message log hota hai, credentials nahi).
+    """
+    try:
+        send()
+        return True
+    except Exception as exc:
+        logger.error("Email '%s' failed: %s: %s", label, type(exc).__name__, str(exc)[:150])
+        return False
 
 
 # ================================================================
@@ -1155,7 +1172,7 @@ def _bad_email(value):
 def contact_submit(request):
     if request.POST.get('website'):                       # honeypot - asli user ye field nahi bharta
         return JsonResponse({'ok': True})
-    if throttled(request, 'contact', 5, 3600):
+    if not settings.DEBUG and throttled(request, 'contact', 5, 3600):   # local testing (DEBUG=True) par limit nahi
         return _too_many()
 
     name = request.POST.get('name', '').strip()
@@ -1177,19 +1194,28 @@ def contact_submit(request):
     if errors:
         return JsonResponse({'ok': False, 'errors': errors}, status=400)
 
-    ContactMessage.objects.create(
-        name=name,
-        email=email,
-        subject=subject,
-        project_type=project_type[:30],
-        message=message,
-        ip_address=get_ip(request)
-    )
+    # ---- Stage 1: database save (sirf yahi 'save nahi hua' wala error de sakta hai) ----
+    try:
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            project_type=project_type[:30],
+            message=message,
+            ip_address=get_ip(request)
+        )
+    except Exception:
+        logger.exception("Contact form: database save failed")
+        return JsonResponse(
+            {'ok': False, 'errors': {'__all__': 'Could not save your message. Please try again.'}},
+            status=500,
+        )
 
-    # Email notification for Tejas
-    send_mail(
-        subject=f"New Portfolio Inquiry — {subject}",
-        message=f"""
+    # ---- Stage 2: email (message DB mein save ho chuka hai, email fail hone se response fail nahi hoga) ----
+    def _send_admin():
+        send_mail(
+            subject=f"New Portfolio Inquiry — {subject}",
+            message=f"""
 Hi Tejas,
 
 You’ve received a new message through your portfolio website.
@@ -1209,14 +1235,14 @@ You can reply directly to the visitor using their email address above.
 Best,
 Portfolio Contact System
 """,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[settings.EMAIL_HOST_USER],
-    )
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[settings.EMAIL_HOST_USER],
+        )
 
-    # Confirmation email for the visitor
-    send_mail(
-        subject="Thanks for reaching out — Tejas Modi",
-        message=f"""
+    def _send_visitor():
+        send_mail(
+            subject="Thanks for reaching out — Tejas Modi",
+            message=f"""
 Hi {name},
 
 Thank you for taking the time to reach out through my portfolio.
@@ -1242,11 +1268,21 @@ Python Full Stack Developer
 Portfolio
 Python • Django • Full Stack Development
 """,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[email],
-    )
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email],
+        )
 
-    return JsonResponse({'ok': True})
+    notified = _try_email('contact-admin', _send_admin)
+    if notified:
+        # Visitor ko confirmation tabhi try karte hain jab SMTP chal raha ho (warna dobara timeout wait hoga)
+        _try_email('contact-visitor', _send_visitor)
+        return JsonResponse({'ok': True, 'email_sent': True})
+
+    return JsonResponse({
+        'ok': True,
+        'email_sent': False,
+        'message': 'Your message has been received successfully. Email notification is temporarily unavailable.',
+    })
 
 
 
@@ -1492,7 +1528,7 @@ Portfolio Project System
             content_type
         )
 
-    admin_email.send()
+    admin_sent = _try_email('requirement-admin', admin_email.send)
 
     visitor_message = f"""
 Hi {data['client_name']},
@@ -1529,16 +1565,23 @@ Portfolio
 Python • Django • Full Stack Development
 """
 
-    send_mail(
-        subject=f"Project Brief Received — {data['project_name']}",
-        message=visitor_message,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[data['email']],
-    )
+    def _send_visitor_brief():
+        send_mail(
+            subject=f"Project Brief Received — {data['project_name']}",
+            message=visitor_message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[data['email']],
+        )
 
+    if admin_sent:
+        _try_email('requirement-visitor', _send_visitor_brief)
+
+    if admin_sent:
+        return JsonResponse({'ok': True, 'email_sent': True, 'message': 'Your project brief has been received.'})
     return JsonResponse({
         'ok': True,
-        'message': 'Your project brief has been received.'
+        'email_sent': False,
+        'message': 'Your project brief has been received successfully. Email notification is temporarily unavailable.',
     })
 
 
