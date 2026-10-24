@@ -70,7 +70,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',          # staticfiles se PEHLE hona zaroori hai
     'django.contrib.staticfiles',
+    'cloudinary',                  # staticfiles ke BAAD
     'portfolio_app',
     'dashboard_app',
 ]
@@ -138,16 +140,24 @@ USE_TZ = False
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'      # `collectstatic` saari static files yahan ikatthi karta hai; Whitenoise yahin se dikhata hai
 
-STORAGES = {
-    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
-}
-
 
 # ---------------------------------------------------------------- Media files (dashboard se upload hone wali files)
-# Abhi local folder. Render par ye files restart par delete ho jati hain, uska solution agle steps mein.
+# Images Cloudinary par save hoti hain (permanent). CLOUDINARY_URL set na ho to local `media/` folder use hota hai.
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+
+if CLOUDINARY_URL:
+    CLOUDINARY_STORAGE = {'CLOUDINARY_URL': CLOUDINARY_URL}
+    DEFAULT_FILE_BACKEND = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_BACKEND = 'django.core.files.storage.FileSystemStorage'
+
+STORAGES = {
+    'default': {'BACKEND': DEFAULT_FILE_BACKEND},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
 
 
 # ---------------------------------------------------------------- Email
