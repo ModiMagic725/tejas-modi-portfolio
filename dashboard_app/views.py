@@ -396,12 +396,17 @@ def add_backend(request):
             errors = _project_errors(request, BackendProject.CATEGORY_CHOICES)
             thumbnail = request.FILES.get('thumbnail')
             pdf = request.FILES.get('documentation_pdf')
+            showcase = request.FILES.get('showcase_pdf')
             if thumbnail:
                 err = _file_error(_check_image, thumbnail)
                 if err:
                     errors.append(err)
             if pdf:
                 err = _file_error(validate_pdf, pdf)
+                if err:
+                    errors.append(err)
+            if showcase:
+                err = _file_error(validate_pdf, showcase)
                 if err:
                     errors.append(err)
 
@@ -415,6 +420,8 @@ def add_backend(request):
                 thumbnail=thumbnail,
                 documentation_pdf=pdf,
                 allow_pdf_download='allow_pdf_download' in request.POST,
+                showcase_pdf=showcase,
+                allow_showcase_download='allow_showcase_download' in request.POST,
                 period=request.POST.get('period', '').strip(),
                 hub_label=request.POST.get('hub_label', '').strip(),
                 roles=request.POST.get('roles', '').strip(),
@@ -441,12 +448,17 @@ def edit_backend(request, id):
             errors = _project_errors(request, BackendProject.CATEGORY_CHOICES)
             thumbnail = request.FILES.get('thumbnail')
             pdf = request.FILES.get('documentation_pdf')
+            showcase = request.FILES.get('showcase_pdf')
             if thumbnail:
                 err = _file_error(_check_image, thumbnail)
                 if err:
                     errors.append(err)
             if pdf:
                 err = _file_error(validate_pdf, pdf)
+                if err:
+                    errors.append(err)
+            if showcase:
+                err = _file_error(validate_pdf, showcase)
                 if err:
                     errors.append(err)
 
@@ -459,6 +471,7 @@ def edit_backend(request, id):
             for field, value in _project_data(request).items():
                 setattr(proj, field, value)
             proj.allow_pdf_download = 'allow_pdf_download' in request.POST
+            proj.allow_showcase_download = 'allow_showcase_download' in request.POST
             proj.period = request.POST.get('period', '').strip()
             proj.hub_label = request.POST.get('hub_label', '').strip()
             proj.roles = request.POST.get('roles', '').strip()
@@ -470,6 +483,10 @@ def edit_backend(request, id):
                 proj.documentation_pdf = pdf
             elif 'remove_pdf' in request.POST:
                 proj.documentation_pdf = None
+            if showcase:
+                proj.showcase_pdf = showcase
+            elif 'remove_showcase' in request.POST:
+                proj.showcase_pdf = None
             proj.save()
             messages.success(request, f"✅ Backend project {proj.project_id} - {proj.title} updated successfully!")
             return redirect("backend_list")
@@ -516,6 +533,13 @@ def toggle_backend_github(request, id):
 @role_required(['admin'])
 def toggle_backend_pdf_download(request, id):
     return _toggle(request, BackendProject, id, 'allow_pdf_download', 'PDF download', 'backend_list')
+
+
+@require_POST
+@login_required
+@role_required(['admin'])
+def toggle_backend_showcase_download(request, id):
+    return _toggle(request, BackendProject, id, 'allow_showcase_download', 'Showcase PDF download', 'backend_list')
 
 
 # ================================================================
@@ -1601,6 +1625,22 @@ def backend_pdf(request, slug):
         BackendProject.objects.filter(id=project.id).update(download_count=F('download_count') + 1)
     response = FileResponse(project.documentation_pdf.open('rb'), as_attachment=download,
                             filename=f"{project.slug}-documentation.pdf", content_type='application/pdf')
+    response['X-Content-Type-Options'] = 'nosniff'
+    return response
+
+
+@require_GET
+@xframe_options_sameorigin
+def backend_showcase_pdf(request, slug):
+    # Project ka poora look (screens / flow). Default: browser mein preview.  ?download=1 -> download (agar allow ho)
+    project = get_object_or_404(BackendProject, slug=slug, is_published=True)
+    if not project.showcase_pdf:
+        raise Http404
+    download = request.GET.get('download') == '1'
+    if download and not project.allow_showcase_download:
+        raise Http404
+    response = FileResponse(project.showcase_pdf.open('rb'), as_attachment=download,
+                            filename=f"{project.slug}-showcase.pdf", content_type='application/pdf')
     response['X-Content-Type-Options'] = 'nosniff'
     return response
 

@@ -28,6 +28,7 @@ urlpatterns = [
     path('backend/toggle-featured/<int:id>/', toggle_backend_featured, name='toggle_backend_featured'),
     path('backend/toggle-github/<int:id>/', toggle_backend_github, name='toggle_backend_github'),
     path('backend/toggle-pdf-download/<int:id>/', toggle_backend_pdf_download, name='toggle_backend_pdf_download'),
+    path('backend/toggle-showcase-download/<int:id>/', toggle_backend_showcase_download, name='toggle_backend_showcase_download'),
 
     # ------------------------ Contact Messages --------------------------
 

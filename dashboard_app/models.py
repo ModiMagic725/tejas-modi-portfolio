@@ -26,6 +26,7 @@ def website_thumb_path(instance, filename):     return _random_name('websites/th
 def website_image_path(instance, filename):     return _random_name('websites/gallery', filename)
 def backend_thumb_path(instance, filename):     return _random_name('backend/thumbs', filename)
 def backend_pdf_path(instance, filename):       return _random_name('backend/docs', filename)
+def backend_showcase_path(instance, filename):  return _random_name('backend/showcase', filename)
 def requirement_file_path(instance, filename):  return _random_name('requirements', filename)
 
 
@@ -169,6 +170,8 @@ class BackendProject(models.Model):
     documentation_pdf = models.FileField(upload_to=backend_pdf_path, blank=True, null=True)
     allow_pdf_download = models.BooleanField(default=True)           # toggle: visitor PDF download kar sake ya nahi
     download_count = models.PositiveIntegerField(default=0)
+    showcase_pdf = models.FileField(upload_to=backend_showcase_path, blank=True, null=True)   # project ka poora look (screens / flow) - PDF
+    allow_showcase_download = models.BooleanField(default=True)      # toggle: visitor showcase PDF download kar sake ya nahi
     github_url = models.URLField(blank=True)
     show_github = models.BooleanField(default=True)                  # toggle: GitHub link dikhana ya nahi
     is_published = models.BooleanField(default=True)

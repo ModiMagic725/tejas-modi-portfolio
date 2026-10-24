@@ -693,6 +693,7 @@
               {% if p.tech_list %}<div class="chips" style="margin-bottom: 16px">{% for t in p.tech_list %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% endif %}
               <div class="cta">
                 {% if p.documentation_pdf %}<a class="btn" href="{% url 'backend_pdf' p.slug %}" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-file" /></svg>View documentation</a>{% else %}<a class="btn" href="#" aria-disabled="true" tabindex="-1">Documentation coming soon</a>{% endif %}
+                {% if p.showcase_pdf %}<a class="btn" href="{% url 'backend_showcase_pdf' p.slug %}" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-file" /></svg>View full look</a>{% endif %}
                 {% if p.public_github_url %}<a class="btn" href="{{ p.public_github_url }}" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-github" /></svg>View code</a>{% endif %}
               </div>
             </article>

@@ -88,6 +88,26 @@
     </label>
 
     <div class="field">
+      <label for="showcase_pdf">Project showcase PDF (full look)</label>
+      {% if project.showcase_pdf %}
+      <div class="doc-note">
+        <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+        <span>A showcase PDF is attached. Choose a file below to replace it.</span>
+      </div>
+      <label class="check" style="margin-bottom:12px">
+        <input type="checkbox" name="remove_showcase"{% if form and 'remove_showcase' in form %} checked{% endif %}>
+        <span><strong>Remove the current showcase PDF</strong><small>Ignored if you upload a new file.</small></span>
+      </label>
+      {% endif %}
+      <input type="file" id="showcase_pdf" name="showcase_pdf" accept=".pdf,application/pdf" aria-describedby="h-showcase">
+      <p class="hint" id="h-showcase">Optional. A PDF showing how the whole project looks (screens, flow). PDF only, up to 20 MB. Visitors can preview it in the browser.</p>
+    </div>
+    <label class="check" style="margin-bottom:18px">
+      <input type="checkbox" name="allow_showcase_download"{% if form %}{% if 'allow_showcase_download' in form %} checked{% endif %}{% elif project %}{% if project.allow_showcase_download %} checked{% endif %}{% else %} checked{% endif %}>
+      <span><strong>Let visitors download the showcase PDF</strong><small>Turn this off to allow preview only.</small></span>
+    </label>
+
+    <div class="field">
       <label for="github_url">GitHub repository URL</label>
       <input type="url" id="github_url" name="github_url" maxlength="200" placeholder="https://github.com/username/repository" value="{% if form %}{{ form.github_url }}{% else %}{{ project.github_url }}{% endif %}">
     </div>

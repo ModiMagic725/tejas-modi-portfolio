@@ -105,6 +105,7 @@ def backend_projects(request):
     backend = []
     for p in projects:
         pdf_url = reverse('backend_pdf', args=[p.slug]) if p.documentation_pdf else ''
+        show_url = reverse('backend_showcase_pdf', args=[p.slug]) if p.showcase_pdf else ''
         backend.append({
             'n': escape(p.title),
             'per': escape(p.period),
@@ -117,6 +118,8 @@ def backend_projects(request):
             'cat': escape(p.get_category_display()),
             'pdf': pdf_url,                                                   # browser mein preview
             'dl': pdf_url + '?download=1' if (pdf_url and p.allow_pdf_download) else '',   # download toggle
+            'show': show_url,                                                 # poora look - browser mein preview
+            'sdl': show_url + '?download=1' if (show_url and p.allow_showcase_download) else '',   # showcase download toggle
             'gh': escape(p.public_github_url),                                # GitHub toggle
         })
 

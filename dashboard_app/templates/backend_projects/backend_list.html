@@ -62,6 +62,11 @@
             {% else %}
               <span class="pill pill-off">No PDF</span>
             {% endif %}
+            {% if p.showcase_pdf %}
+              <span class="pill pill-on">Showcase PDF</span>
+            {% else %}
+              <span class="pill pill-off">No showcase</span>
+            {% endif %}
           </td>
           <td>
             <form class="tg-form" method="post" action="{% url 'toggle_backend_published' p.id %}">{% csrf_token %}
@@ -80,12 +85,17 @@
               <button type="submit" class="tg" role="switch" aria-checked="{{ p.allow_pdf_download|yesno:'true,false' }}"><i aria-hidden="true"></i>PDF download</button>
             </form>
             {% endif %}
+            {% if p.showcase_pdf %}
+            <form class="tg-form" method="post" action="{% url 'toggle_backend_showcase_download' p.id %}">{% csrf_token %}
+              <button type="submit" class="tg" role="switch" aria-checked="{{ p.allow_showcase_download|yesno:'true,false' }}"><i aria-hidden="true"></i>Showcase download</button>
+            </form>
+            {% endif %}
           </td>
           <td class="num">{{ p.display_order }}</td>
           <td>
             <div class="row-actions">
               <a class="btn btn-ghost btn-icon" href="{% url 'edit_backend' p.id %}" title="Edit" aria-label="Edit {{ p.title }}"><svg class="ic"><use href="#i-edit"/></svg></a>
-              <form method="post" action="{% url 'delete_backend' p.id %}" data-confirm="Delete “{{ p.title }}”? Its documentation PDF record is removed too. This cannot be undone.">{% csrf_token %}
+              <form method="post" action="{% url 'delete_backend' p.id %}" data-confirm="Delete “{{ p.title }}”? Its documentation and showcase PDF records are removed too. This cannot be undone.">{% csrf_token %}
                 <button type="submit" class="btn btn-danger btn-icon" title="Delete" aria-label="Delete {{ p.title }}"><svg class="ic"><use href="#i-trash"/></svg></button>
               </form>
             </div>
