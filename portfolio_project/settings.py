@@ -70,9 +70,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',          # staticfiles se PEHLE hona zaroori hai
     'django.contrib.staticfiles',
-    'cloudinary',                  # staticfiles ke BAAD
+    'cloudinary_storage',
+    'cloudinary',
     'portfolio_app',
     'dashboard_app',
 ]
