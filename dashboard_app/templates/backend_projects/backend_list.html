@@ -2,6 +2,7 @@
 {% block title %}Backend projects{% endblock %}
 
 {% block content %}
+{% include "backend_projects/_backend_ui.html" %}
 {# Context: projects (Page), q, selected, categories #}
 <section class="page-head">
   <div>
@@ -13,7 +14,7 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card bk">
   <form class="toolbar" method="get" role="search" aria-label="Filter backend projects">
     <div class="search">
       <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
@@ -28,6 +29,7 @@
   </form>
 
   {% if projects %}
+  <p class="list-count">{{ projects.paginator.count }} project{{ projects.paginator.count|pluralize }}{% if q or selected %} found{% endif %}</p>
   <div class="table-wrap">
     <table class="table">
       <thead>
@@ -56,6 +58,7 @@
             {% if p.tech_list %}<div class="chips">{% for t in p.tech_list %}<span class="chip">{{ t }}</span>{% endfor %}</div>{% else %}<small>None added</small>{% endif %}
           </td>
           <td>
+            <div class="doc-pills">
             {% if p.documentation_pdf %}
               <span class="pill pill-on">PDF attached</span>
               <small>{{ p.download_count }} download{{ p.download_count|pluralize }}</small>
@@ -67,8 +70,10 @@
             {% else %}
               <span class="pill pill-off">No showcase</span>
             {% endif %}
+            </div>
           </td>
           <td>
+            <div class="tg-group">
             <form class="tg-form" method="post" action="{% url 'toggle_backend_published' p.id %}">{% csrf_token %}
               <button type="submit" class="tg" role="switch" aria-checked="{{ p.is_published|yesno:'true,false' }}"><i aria-hidden="true"></i>Published</button>
             </form>
@@ -90,6 +95,7 @@
               <button type="submit" class="tg" role="switch" aria-checked="{{ p.allow_showcase_download|yesno:'true,false' }}"><i aria-hidden="true"></i>Showcase download</button>
             </form>
             {% endif %}
+            </div>
           </td>
           <td class="num">{{ p.display_order }}</td>
           <td>

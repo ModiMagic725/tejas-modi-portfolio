@@ -1,9 +1,10 @@
 {# Shared by add_resume.html and edit_resume.html.  Context: resume (edit only), form (POST data after an error), has_active (add only) #}
-<form method="post" enctype="multipart/form-data" class="form-stack">
+{% include "resume/_resume_ui.html" %}
+<form method="post" enctype="multipart/form-data" class="form-stack rs" id="resumeForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Resume details</h3></header>
+    <header class="card-h"><h3>Resume details</h3><p class="card-sub">Title and a private note.</p></header>
     <div class="field">
       <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
       <input type="text" id="title" name="title" maxlength="120" required placeholder="Python Django Resume" aria-describedby="h-title" value="{% if form %}{{ form.title }}{% else %}{{ resume.title }}{% endif %}">
@@ -17,7 +18,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>PDF file</h3></header>
+    <header class="card-h"><h3>PDF file</h3><p class="card-sub">The file visitors preview and download.</p></header>
     {% if resume.pdf_file %}
     <div class="current">
       <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
@@ -32,7 +33,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Website</h3></header>
+    <header class="card-h"><h3>Website</h3><p class="card-sub">Choose which resume goes live.</p></header>
     <div class="checks">
       <label class="check">
         <input type="checkbox" name="is_active"{% if form %}{% if 'is_active' in form %} checked{% endif %}{% elif resume %}{% if resume.is_active %} checked{% endif %}{% elif not has_active %} checked{% endif %}>

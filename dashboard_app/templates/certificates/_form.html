@@ -1,9 +1,10 @@
 {# Shared by add_certificate.html and edit_certificate.html.  Context: cert (edit only), form (POST data after a validation error). #}
-<form method="post" enctype="multipart/form-data" class="form-stack" id="certificateForm">
+{% include "certificates/_certificate_ui.html" %}
+<form method="post" enctype="multipart/form-data" class="form-stack ct" id="certificateForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Certificate details</h3></header>
+    <header class="card-h"><h3>Certificate details</h3><p class="card-sub">Name, issuer, date and a short description.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="name">Certificate name <span class="req" aria-hidden="true">*</span></label>
@@ -27,7 +28,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Preview image</h3></header>
+    <header class="card-h"><h3>Preview image</h3><p class="card-sub">Shown on the certificate card. Optional.</p></header>
     <div class="field">
       <label for="thumbnail">Certificate image</label>
       {% if cert.thumbnail %}
@@ -46,7 +47,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Certificate PDF</h3></header>
+    <header class="card-h"><h3>Certificate PDF</h3><p class="card-sub">The file visitors can view and download.</p></header>
     <div class="field">
       <label for="pdf_file">PDF file</label>
       {% if cert.pdf_file %}
@@ -65,7 +66,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Visibility</h3></header>
+    <header class="card-h"><h3>Visibility</h3><p class="card-sub">Order and whether it shows on the About page.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="display_order">Display order</label>

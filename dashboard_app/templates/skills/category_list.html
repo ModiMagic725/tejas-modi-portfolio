@@ -2,6 +2,7 @@
 {% block title %}Skill categories{% endblock %}
 
 {% block content %}
+{% include "skills/_skills_ui.html" %}
 {# Context: categories (annotated with skill_count) #}
 <section class="page-head">
   <div>
@@ -13,8 +14,9 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card sl">
   {% if categories %}
+  <p class="list-count">{{ categories|length }} categor{{ categories|length|pluralize:"y,ies" }}</p>
   <div class="table-wrap">
     <table class="table">
       <thead>

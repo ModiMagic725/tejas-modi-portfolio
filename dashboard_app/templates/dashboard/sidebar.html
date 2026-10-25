@@ -1,50 +1,34 @@
 {# Context: `active` = key of the current section, e.g. 'home', 'websites', 'experience'. Optional: nav_counts.messages / nav_counts.requirements #}
-{% url 'dashboard' as u_home %}
-{% url 'skill_list' as u_skills %}
-{% url 'skill_category_list' as u_skill_categories %}
-{% url 'experience_list' as u_experience %}
-{% url 'certificate_list' as u_certificates %}
-{% url 'resume' as u_resume %}
-{% url 'website_list' as u_websites %}
-{% url 'backend_list' as u_backend %}
-{% url 'message_list' as u_messages %}
-{% url 'requirement_list' as u_requirements %}
-{% url 'uploaded_files' as u_files %}
-{% url 'settings' as u_settings %}
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-  <a class="brand" href="{{ u_home|default:'#' }}">
+  <a class="brand" href="{% url 'dashboard' %}">
     <span class="brand-mark">TM</span>
     <span><strong>Portfolio</strong><small>Admin dashboard</small></span>
   </a>
   <nav class="side-nav">
     <p class="side-h">Overview</p>
-    <a href="{{ u_home|default:'#' }}" {% if active == 'home' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-home"/></svg>Dashboard</a>
+    <a href="{% url 'dashboard' %}" {% if active == 'home' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-home"/></svg>Dashboard</a>
 
     <p class="side-h">Content</p>
     <div class="side-group{% if active == 'experience' or active == 'certificates' %} open{% endif %}">
       <button type="button" class="side-toggle" aria-expanded="{% if active == 'experience' or active == 'certificates' %}true{% else %}false{% endif %}"><svg class="ic"><use href="#i-user"/></svg>Profile<svg class="ic chev" aria-hidden="true"><use href="#i-chevron"/></svg></button>
       <div class="side-sub-wrap"><div class="side-sub"><div class="side-sub-in">
-        <a href="{{ u_experience|default:'#' }}" {% if active == 'experience' %}class="on" aria-current="page"{% endif %}>Experience</a>
-        <a href="{{ u_certificates|default:'#' }}" {% if active == 'certificates' %}class="on" aria-current="page"{% endif %}>Certificates</a>
+        <a href="{% url 'experience_list' %}" {% if active == 'experience' %}class="on" aria-current="page"{% endif %}>Experience</a>
+        <a href="{% url 'certificate_list' %}" {% if active == 'certificates' %}class="on" aria-current="page"{% endif %}>Certificates</a>
       </div></div></div>
     </div>
     <div class="side-group{% if active == 'skill_categories' or active == 'skills' %} open{% endif %}">
       <button type="button" class="side-toggle" aria-expanded="{% if active == 'skill_categories' or active == 'skills' %}true{% else %}false{% endif %}"><svg class="ic"><use href="#i-bolt"/></svg>Skills<svg class="ic chev" aria-hidden="true"><use href="#i-chevron"/></svg></button>
       <div class="side-sub-wrap"><div class="side-sub"><div class="side-sub-in">
-        <a href="{{ u_skill_categories|default:'#' }}" {% if active == 'skill_categories' %}class="on" aria-current="page"{% endif %}>Categories</a>
-        <a href="{{ u_skills|default:'#' }}" {% if active == 'skills' %}class="on" aria-current="page"{% endif %}>Sub categories</a>
+        <a href="{% url 'skill_category_list' %}" {% if active == 'skill_categories' %}class="on" aria-current="page"{% endif %}>Categories</a>
+        <a href="{% url 'skill_list' %}" {% if active == 'skills' %}class="on" aria-current="page"{% endif %}>Sub categories</a>
       </div></div></div>
     </div>
-    <a href="{{ u_resume|default:'#' }}" {% if active == 'resume' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-file"/></svg>Resume</a>
-    <a href="{{ u_websites|default:'#' }}" {% if active == 'websites' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-globe"/></svg>Website projects</a>
-    <a href="{{ u_backend|default:'#' }}" {% if active == 'backend' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-server"/></svg>Backend projects</a>
+    <a href="{% url 'resume' %}" {% if active == 'resume' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-file"/></svg>Resume</a>
+    <a href="{% url 'website_list' %}" {% if active == 'websites' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-globe"/></svg>Website projects</a>
+    <a href="{% url 'backend_list' %}" {% if active == 'backend' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-server"/></svg>Backend projects</a>
 
     <p class="side-h">Inbox</p>
-    <a href="{{ u_messages|default:'#' }}" {% if active == 'messages' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-mail"/></svg>Contact messages{% if nav_counts.messages %}<span class="badge">{{ nav_counts.messages }}</span>{% endif %}</a>
-    <a href="{{ u_requirements|default:'#' }}" {% if active == 'requirements' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-inbox"/></svg>Project requirements{% if nav_counts.requirements %}<span class="badge">{{ nav_counts.requirements }}</span>{% endif %}</a>
-    <a href="{{ u_files|default:'#' }}" {% if active == 'files' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-folder"/></svg>Uploaded files</a>
-
-    <p class="side-h">System</p>
-    <a href="{{ u_settings|default:'#' }}" {% if active == 'settings' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-cog"/></svg>Settings</a>
+    <a href="{% url 'message_list' %}" {% if active == 'messages' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-mail"/></svg>Contact messages{% if nav_counts.messages %}<span class="badge">{{ nav_counts.messages }}</span>{% endif %}</a>
+    <a href="{% url 'requirement_list' %}" {% if active == 'requirements' %}class="on" aria-current="page"{% endif %}><svg class="ic"><use href="#i-inbox"/></svg>Project requirements{% if nav_counts.requirements %}<span class="badge">{{ nav_counts.requirements }}</span>{% endif %}</a>
   </nav>
 </aside>

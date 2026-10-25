@@ -1,9 +1,10 @@
 {# Shared by add_backend.html and edit_backend.html.  Context: categories, project (edit only), form (POST data after a validation error). #}
-<form method="post" enctype="multipart/form-data" class="form-stack" id="projectForm">
+{% include "backend_projects/_backend_ui.html" %}
+<form method="post" enctype="multipart/form-data" class="form-stack bk" id="projectForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Basic information</h3></header>
+    <header class="card-h"><h3>Basic information</h3><p class="card-sub">Name, summary and category. This is what visitors see first.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
@@ -39,8 +40,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>System details</h3></header>
-    <p class="hint" style="margin:-6px 0 16px">The Backend page shows these exactly as written. Only add what this project really has.</p>
+    <header class="card-h"><h3>System details</h3><p class="card-sub">Shown exactly as written on the Backend page.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="hub_label">Diagram centre label</label>
@@ -66,7 +66,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Documentation and links</h3></header>
+    <header class="card-h"><h3>Documentation and links</h3><p class="card-sub">PDFs and repository. All optional.</p></header>
     <div class="field">
       <label for="documentation_pdf">Documentation PDF</label>
       {% if project.documentation_pdf %}
@@ -118,7 +118,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Thumbnail and visibility</h3></header>
+    <header class="card-h"><h3>Thumbnail and visibility</h3><p class="card-sub">Cover image, order and where the project appears.</p></header>
     <div class="field">
       <label for="thumbnail">Thumbnail</label>
       {% if project.thumbnail %}

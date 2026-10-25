@@ -2,6 +2,7 @@
 {% block title %}Sub categories{% endblock %}
 
 {% block content %}
+{% include "skills/_skills_ui.html" %}
 {# Context: categories (with prefetched skills), skill_total #}
 <section class="page-head">
   <div>
@@ -14,7 +15,7 @@
 </section>
 
 {% for c in categories %}
-<section class="card sk-cat{% if not c.is_published %} is-off{% endif %}">
+<section class="card sk-cat sl {% cycle 'tone-1' 'tone-2' 'tone-3' 'tone-4' 'tone-5' %}{% if not c.is_published %} is-off{% endif %}">
   <header class="card-h">
     <h3>{{ c.name }} <small class="sk-meta">{{ c.skills.all|length }} item{{ c.skills.all|length|pluralize }} · order {{ c.display_order }}</small></h3>
     <div class="sk-actions">
@@ -38,7 +39,7 @@
   {% endif %}
 </section>
 {% empty %}
-<section class="card">
+<section class="card sl">
   <div class="empty"><svg class="ic"><use href="#i-bolt"/></svg><p>No categories yet.</p>
     <small>Start with a category such as “Languages”, “Backend” or “Databases”. Then add sub categories inside it.</small>
     <p style="margin-top:14px"><a class="btn btn-primary" href="{% url 'add_skill_category' %}"><svg class="ic"><use href="#i-plus"/></svg>Add category</a></p>

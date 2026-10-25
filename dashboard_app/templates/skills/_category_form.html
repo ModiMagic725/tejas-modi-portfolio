@@ -1,9 +1,10 @@
 {# Shared by add_skill_category.html and edit_skill_category.html.  Context: category (edit only), form (POST data after a validation error). #}
-<form method="post" class="form-stack" id="categoryForm">
+{% include "skills/_skills_ui.html" %}
+<form method="post" class="form-stack sl" id="categoryForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Category details</h3></header>
+    <header class="card-h"><h3>Category details</h3><p class="card-sub">One row in the Technical arsenal.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="name">Category name <span class="req" aria-hidden="true">*</span></label>

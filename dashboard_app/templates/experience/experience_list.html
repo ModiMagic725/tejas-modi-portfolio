@@ -2,6 +2,7 @@
 {% block title %}Experience{% endblock %}
 
 {% block content %}
+{% include "experience/_experience_ui.html" %}
 {# Context: experiences (Page), q #}
 <section class="page-head">
   <div>
@@ -13,7 +14,7 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card xp">
   <form class="toolbar" method="get" role="search" aria-label="Search experience">
     <div class="search">
       <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
@@ -24,6 +25,7 @@
   </form>
 
   {% if experiences %}
+  <p class="list-count">{{ experiences.paginator.count }} entr{{ experiences.paginator.count|pluralize:"y,ies" }}{% if q %} found{% endif %}</p>
   <div class="table-wrap">
     <table class="table">
       <thead>

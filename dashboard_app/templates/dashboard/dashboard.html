@@ -2,15 +2,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-{# Expected context: stats{websites,backend,skills,messages_new,requirements_new}, recent_messages, recent_requirements, active_resume #}
-{% url 'add_website' as u_add_web %}
-{% url 'add_backend' as u_add_be %}
-{% url 'resume' as u_resume %}
-{% url 'website_list' as u_websites %}
-{% url 'backend_list' as u_backend %}
-{% url 'skills' as u_skills %}
-{% url 'message_list' as u_messages %}
-{% url 'requirement_list' as u_reqs %}
+{# Context: stat_cards, attention, pipeline, pipeline_total, pipeline_archived, trend, recent_messages, recent_requirements, active_resume #}
+{% include "dashboard/_dashboard_ui.html" %}
 
 <section class="page-head">
   <div>
@@ -18,22 +11,98 @@
     <p class="muted">{% now "l, j F Y" %}. Here is what needs your attention.</p>
   </div>
   <div class="head-actions">
-    <a class="btn btn-primary" href="{{ u_add_web|default:'#' }}"><svg class="ic"><use href="#i-plus"/></svg>Add website</a>
-    <a class="btn btn-ghost" href="{{ u_add_be|default:'#' }}"><svg class="ic"><use href="#i-plus"/></svg>Add backend project</a>
+    <a class="btn btn-primary" href="{% url 'add_website' %}"><svg class="ic"><use href="#i-plus"/></svg>Add website</a>
+    <a class="btn btn-ghost" href="{% url 'add_backend' %}"><svg class="ic"><use href="#i-plus"/></svg>Add backend project</a>
   </div>
 </section>
 
-<section class="stats" aria-label="Summary">
-  <a class="stat" href="{{ u_websites|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-globe"/></svg></span><span class="stat-n">{{ stats.websites|default:0 }}</span><span class="stat-l">Website projects</span></a>
-  <a class="stat" href="{{ u_backend|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-server"/></svg></span><span class="stat-n">{{ stats.backend|default:0 }}</span><span class="stat-l">Backend projects</span></a>
-  <a class="stat" href="{{ u_skills|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-bolt"/></svg></span><span class="stat-n">{{ stats.skills|default:0 }}</span><span class="stat-l">Skills</span></a>
-  <a class="stat {% if stats.messages_new %}hot{% endif %}" href="{{ u_messages|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-mail"/></svg></span><span class="stat-n">{{ stats.messages_new|default:0 }}</span><span class="stat-l">New messages</span></a>
-  <a class="stat {% if stats.requirements_new %}hot{% endif %}" href="{{ u_reqs|default:'#' }}"><span class="stat-ic"><svg class="ic"><use href="#i-inbox"/></svg></span><span class="stat-n">{{ stats.requirements_new|default:0 }}</span><span class="stat-l">New requirements</span></a>
-</section>
+<div class="db">
+  <section class="db-stats" aria-label="Summary">
+    {% for s in stat_cards %}
+    <a class="db-stat tone-{{ forloop.counter }}{% if s.hot %} hot{% endif %}" href="{{ s.url }}">
+      <span class="db-stat-top">
+        <span class="db-stat-ic"><svg class="ic" aria-hidden="true"><use href="#{{ s.icon }}"/></svg></span>
+        <span class="db-stat-l">{{ s.label }}</span>
+      </span>
+      <span class="db-stat-n">{{ s.value }}{% if s.total is not None %}<small> / {{ s.total }}</small>{% endif %}</span>
+      <span class="db-stat-f">{{ s.hint }}</span>
+      <span class="db-delta {{ s.delta.dir }}">{{ s.delta.text }}</span>
+    </a>
+    {% endfor %}
+  </section>
+
+  <div class="db-row">
+    <section class="card db-card" aria-labelledby="attnTitle">
+      <header class="card-h">
+        <h3 id="attnTitle">Needs attention{% if attention %} <span class="db-count">{{ attention|length }}</span>{% endif %}</h3>
+      </header>
+      {% if attention %}
+      <ul class="db-attn">
+        {% for a in attention %}
+        <li class="lv-{{ a.level }}">
+          <span class="db-lv">{{ a.badge }}</span>
+          <span class="db-attn-t">{{ a.text }}</span>
+          <a class="btn btn-ghost btn-sm" href="{{ a.url }}">{{ a.action }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="db-ok">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+        <p>Everything looks good.</p>
+        <small>No missing files, unanswered messages or empty sections right now.</small>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="card db-card" aria-labelledby="pipeTitle">
+      <header class="card-h"><h3 id="pipeTitle">Requirement pipeline</h3><a href="{% url 'requirement_list' %}">View all</a></header>
+      {% if pipeline_total %}
+      <ol class="db-pipe">
+        {% for p in pipeline %}
+        <li class="st-{{ p.key }}" style="--w:{{ p.pct }}%;--i:{{ forloop.counter0 }}">
+          <span class="db-pipe-l">{{ p.label }}</span>
+          <span class="db-pipe-bar"><i></i></span>
+          <b>{{ p.count }}</b>
+        </li>
+        {% endfor %}
+      </ol>
+      {% if pipeline_archived %}<p class="db-note">{{ pipeline_archived }} archived, not shown here.</p>{% endif %}
+      {% else %}
+      <div class="empty"><svg class="ic"><use href="#i-inbox"/></svg><p>No active requirements.</p><small>Client briefs move through these stages once they arrive.</small></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="card db-card" aria-labelledby="trendTitle">
+    <header class="card-h">
+      <h3 id="trendTitle">Last 30 days</h3>
+      <div class="db-legend">
+        <span class="lg-m">Messages <b>{{ trend.messages }}</b></span>
+        <span class="lg-r">Requirements <b>{{ trend.requirements }}</b></span>
+      </div>
+    </header>
+    {% if trend.messages or trend.requirements %}
+    <div class="db-chart" role="img" aria-label="Messages and requirements received per day over the last 30 days: {{ trend.messages }} messages and {{ trend.requirements }} requirements in total.">
+      <span class="db-ymax" aria-hidden="true">{{ trend.max }}</span>
+      <div class="db-bars">
+        {% for d in trend.days %}
+        <div class="db-day" style="--i:{{ forloop.counter0 }}" title="{{ d.label }}: {{ d.m }} message{{ d.m|pluralize }}, {{ d.r }} requirement{{ d.r|pluralize }}">
+          <span class="m" style="height:{{ d.mh }}%"></span><span class="r" style="height:{{ d.rh }}%"></span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="db-xaxis" aria-hidden="true"><span>{{ trend.start }}</span><span>{{ trend.mid }}</span><span>{{ trend.end }}</span></div>
+    </div>
+    {% else %}
+    <div class="empty"><svg class="ic"><use href="#i-mail"/></svg><p>Nothing received in the last 30 days.</p><small>Messages and project requirements from your site will be charted here.</small></div>
+    {% endif %}
+  </section>
+</div>
 
 <div class="grid-2">
   <section class="card">
-    <header class="card-h"><h3>Recent messages</h3><a href="{{ u_messages|default:'#' }}">View all</a></header>
+    <header class="card-h"><h3>Recent messages</h3><a href="{% url 'message_list' %}">View all</a></header>
     {% if recent_messages %}
     <div class="table-wrap"><table class="table">
       <thead><tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th></tr></thead>
@@ -54,7 +123,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Recent project requirements</h3><a href="{{ u_reqs|default:'#' }}">View all</a></header>
+    <header class="card-h"><h3>Recent project requirements</h3><a href="{% url 'requirement_list' %}">View all</a></header>
     {% if recent_requirements %}
     <ul class="list">
       {% for r in recent_requirements %}
@@ -71,7 +140,7 @@
 </div>
 
 <section class="card">
-  <header class="card-h"><h3>Resume</h3><a href="{{ u_resume|default:'#' }}">Manage</a></header>
+  <header class="card-h"><h3>Resume</h3><a href="{% url 'resume' %}">Manage</a></header>
   {% if active_resume %}
     <p class="muted">Active resume: <strong>{{ active_resume.title }}</strong>, uploaded {{ active_resume.uploaded_at|date:"d M Y" }}.</p>
   {% else %}

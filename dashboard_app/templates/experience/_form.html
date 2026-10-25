@@ -1,9 +1,10 @@
 {# Shared by add_experience.html and edit_experience.html.  Context: experience (edit only), form (POST data after a validation error). #}
-<form method="post" class="form-stack" id="experienceForm">
+{% include "experience/_experience_ui.html" %}
+<form method="post" class="form-stack xp" id="experienceForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Role details</h3></header>
+    <header class="card-h"><h3>Role details</h3><p class="card-sub">Job title, company and place.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="role">Role <span class="req" aria-hidden="true">*</span></label>
@@ -21,7 +22,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Duration</h3></header>
+    <header class="card-h"><h3>Duration</h3><p class="card-sub">When you started and finished.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="start_date">Start date <span class="req" aria-hidden="true">*</span></label>
@@ -40,7 +41,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>What you did</h3></header>
+    <header class="card-h"><h3>What you did</h3><p class="card-sub">Shown when a visitor opens this entry.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="description">Description <span class="req" aria-hidden="true">*</span></label>
@@ -56,7 +57,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Visibility</h3></header>
+    <header class="card-h"><h3>Visibility</h3><p class="card-sub">Order and whether it shows on the About page.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="display_order">Display order</label>

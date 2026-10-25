@@ -2,6 +2,7 @@
 {% block title %}Certificates{% endblock %}
 
 {% block content %}
+{% include "certificates/_certificate_ui.html" %}
 {# Context: certificates (Page), q #}
 <section class="page-head">
   <div>
@@ -13,7 +14,7 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card ct">
   <form class="toolbar" method="get" role="search" aria-label="Search certificates">
     <div class="search">
       <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
@@ -24,6 +25,7 @@
   </form>
 
   {% if certificates %}
+  <p class="list-count">{{ certificates.paginator.count }} certificate{{ certificates.paginator.count|pluralize }}{% if q %} found{% endif %}</p>
   <div class="table-wrap">
     <table class="table">
       <thead>

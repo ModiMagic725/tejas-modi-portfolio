@@ -2,6 +2,7 @@
 {% block title %}Add sub categories{% endblock %}
 
 {% block content %}
+{% include "skills/_skills_ui.html" %}
 {# Context: categories, selected_category, form (POST data after a validation error) #}
 <section class="page-head">
   <div>
@@ -11,11 +12,11 @@
   <div class="head-actions"><a class="btn btn-ghost" href="{% url 'skill_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to sub categories</a></div>
 </section>
 
-<form method="post" class="form-stack" id="skillForm">
+<form method="post" class="form-stack sl" id="skillForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Sub categories</h3></header>
+    <header class="card-h"><h3>Sub categories</h3><p class="card-sub">Pick a category and add many at once.</p></header>
     <div class="form-grid">
       <div class="field span-2">
         <label for="category">Category <span class="req" aria-hidden="true">*</span></label>

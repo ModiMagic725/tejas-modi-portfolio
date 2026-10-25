@@ -2,6 +2,7 @@
 {% block title %}Edit sub category{% endblock %}
 
 {% block content %}
+{% include "skills/_skills_ui.html" %}
 {# Context: skill, categories, form (POST data after a validation error) #}
 <section class="page-head">
   <div>
@@ -11,11 +12,11 @@
   <div class="head-actions"><a class="btn btn-ghost" href="{% url 'skill_list' %}"><svg class="ic"><use href="#i-back"/></svg>Back to sub categories</a></div>
 </section>
 
-<form method="post" class="form-stack" id="skillForm">
+<form method="post" class="form-stack sl" id="skillForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Sub category details</h3></header>
+    <header class="card-h"><h3>Sub category details</h3><p class="card-sub">Rename it or move it to another category.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="name">Sub category name <span class="req" aria-hidden="true">*</span></label>

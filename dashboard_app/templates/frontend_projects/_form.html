@@ -1,9 +1,10 @@
 {# Shared by add_website.html and edit_website.html.  Context: categories, project (edit only), form (POST data after a validation error). #}
-<form method="post" enctype="multipart/form-data" class="form-stack" id="projectForm">
+{% include "frontend_projects/_frontend_ui.html" %}
+<form method="post" enctype="multipart/form-data" class="form-stack fe" id="projectForm">
   {% csrf_token %}
 
   <section class="card">
-    <header class="card-h"><h3>Basic information</h3></header>
+    <header class="card-h"><h3>Basic information</h3><p class="card-sub">Name and summary. This is what visitors see first.</p></header>
     <div class="field">
       <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
       <input type="text" id="title" name="title" maxlength="120" required value="{% if form %}{{ form.title }}{% else %}{{ project.title }}{% endif %}">
@@ -20,7 +21,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Details</h3></header>
+    <header class="card-h"><h3>Details</h3><p class="card-sub">Category, year, technologies and key features.</p></header>
     <div class="form-grid">
       <div class="field">
         <label for="category">Category <span class="req" aria-hidden="true">*</span></label>
@@ -53,7 +54,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Links</h3></header>
+    <header class="card-h"><h3>Links</h3><p class="card-sub">Live site and repository. Both optional.</p></header>
     <div class="field">
       <label for="live_url">Live website URL</label>
       <input type="url" id="live_url" name="live_url" maxlength="200" placeholder="https://" aria-describedby="h-live" value="{% if form %}{{ form.live_url }}{% else %}{{ project.live_url }}{% endif %}">
@@ -70,7 +71,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Images</h3></header>
+    <header class="card-h"><h3>Images</h3><p class="card-sub">Cover thumbnail and screenshots.</p></header>
     <div class="field">
       <label for="thumbnail">Thumbnail {% if not project %}<span class="req" aria-hidden="true">*</span>{% endif %}</label>
       {% if project.thumbnail %}
@@ -105,7 +106,7 @@
   </section>
 
   <section class="card">
-    <header class="card-h"><h3>Visibility</h3></header>
+    <header class="card-h"><h3>Visibility</h3><p class="card-sub">Choose where this website appears.</p></header>
     <div class="checks">
       <label class="check">
         <input type="checkbox" name="is_published"{% if form %}{% if 'is_published' in form %} checked{% endif %}{% elif project %}{% if project.is_published %} checked{% endif %}{% else %} checked{% endif %}>

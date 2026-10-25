@@ -1,8 +1,7 @@
 import logging
 import mimetypes
 import re
-from datetime import datetime
-
+from datetime import datetime, timedelta, date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, FileResponse, Http404
 from django.contrib import messages
@@ -17,7 +16,6 @@ from django.utils import timezone
 from django.utils.text import get_valid_filename
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.decorators.http import require_POST, require_GET
-
 from .models import *
 from .decorators import login_required, role_required
 from .utils import get_ip, throttled
@@ -180,19 +178,164 @@ def logout_view(request):
 # ================================================================
 # DASHBOARD
 # ================================================================
+def _week_delta(qs, field='created_at'):
+    """Is hafte (last 7 din) vs pichhle hafte (7-14 din pehle) ki ginti + dikhane layak text."""
+    now = timezone.now()
+    this_week = qs.filter(**{field + '__gte': now - timedelta(days=7)}).count()
+    prev_week = qs.filter(**{field + '__gte': now - timedelta(days=14),
+                             field + '__lt': now - timedelta(days=7)}).count()
+    diff = this_week - prev_week
+    if diff > 0:
+        return {'dir': 'up', 'text': '+%d vs last week' % diff, 'this_week': this_week}
+    if diff < 0:
+        return {'dir': 'down', 'text': '\u2212%d vs last week' % abs(diff), 'this_week': this_week}
+    return {'dir': 'flat', 'text': 'Same as last week', 'this_week': this_week}
+
+
+def _flag(items, level, qs, one, many, list_name, edit_name=None):
+    """Needs-attention list mein ek line jodta hai (sirf tab jab koi record match kare)."""
+    from django.urls import reverse
+    n = qs.count()
+    if not n:
+        return
+    single = n == 1 and edit_name
+    url = reverse(edit_name, args=[qs.values_list('id', flat=True)[0]]) if single else reverse(list_name)
+    items.append({
+        'level': level,
+        'badge': {'bad': 'Fix now', 'warn': 'Missing', 'info': 'Tip'}[level],
+        'text': one if n == 1 else many.format(n=n),
+        'url': url,
+        'action': 'Edit' if single else 'Review',
+    })
+
+
+def _attention_items():
+    from django.urls import reverse
+    now = timezone.now()
+    stale = now - timedelta(hours=48)
+    items = []
+
+    if not Resume.objects.filter(is_active=True).exists():
+        items.append({'level': 'bad', 'badge': 'Fix now', 'action': 'Open resume',
+                      'text': 'No resume is active. The resume buttons are hidden on your website.',
+                      'url': reverse('resume')})
+
+    _flag(items, 'bad', ContactMessage.objects.filter(status='new', created_at__lt=stale),
+          '1 message has been waiting for a reply for over 48 hours',
+          '{n} messages have been waiting for a reply for over 48 hours', 'message_list')
+    _flag(items, 'bad', ProjectRequirement.objects.filter(status='new', created_at__lt=stale),
+          '1 project requirement has not been reviewed for over 48 hours',
+          '{n} project requirements have not been reviewed for over 48 hours', 'requirement_list')
+
+    backend = BackendProject.objects.filter(is_published=True)
+    _flag(items, 'warn', backend.filter(Q(documentation_pdf='') | Q(documentation_pdf__isnull=True)),
+          '1 published backend project has no documentation PDF',
+          '{n} published backend projects have no documentation PDF', 'backend_list', 'edit_backend')
+    _flag(items, 'warn', backend.filter(Q(thumbnail='') | Q(thumbnail__isnull=True)),
+          '1 published backend project has no thumbnail',
+          '{n} published backend projects have no thumbnail', 'backend_list', 'edit_backend')
+    _flag(items, 'warn', WebsiteProject.objects.filter(is_published=True, images__isnull=True),
+          '1 published website has no screenshots',
+          '{n} published websites have no screenshots', 'website_list', 'edit_website')
+    _flag(items, 'warn', Certificate.objects.filter(is_published=True).filter(Q(pdf_file='') | Q(pdf_file__isnull=True)),
+          '1 published certificate has no PDF',
+          '{n} published certificates have no PDF', 'certificate_list', 'edit_certificate')
+    _flag(items, 'warn', SkillCategory.objects.filter(is_published=True).annotate(c=Count('skills')).filter(c=0),
+          '1 skill category is empty and shows nothing on the About page',
+          '{n} skill categories are empty and show nothing on the About page', 'skill_category_list', 'edit_skill_category')
+
+    _flag(items, 'info', WebsiteProject.objects.filter(is_published=True, live_url=''),
+          '1 published website has no live link',
+          '{n} published websites have no live link', 'website_list', 'edit_website')
+    _flag(items, 'info', backend.filter(Q(showcase_pdf='') | Q(showcase_pdf__isnull=True)),
+          '1 published backend project has no showcase PDF',
+          '{n} published backend projects have no showcase PDF', 'backend_list', 'edit_backend')
+
+    if not (WebsiteProject.objects.filter(is_published=True, is_featured=True).exists()
+            or backend.filter(is_featured=True).exists()):
+        items.append({'level': 'info', 'badge': 'Tip', 'action': 'Choose',
+                      'text': 'No project is featured, so the home page highlights nothing.',
+                      'url': reverse('website_list')})
+    if not Experience.objects.filter(is_published=True).exists():
+        items.append({'level': 'info', 'badge': 'Tip', 'action': 'Add',
+                      'text': 'No experience is published yet. The About page timeline is empty.',
+                      'url': reverse('add_experience')})
+
+    rank = {'bad': 0, 'warn': 1, 'info': 2}
+    items.sort(key=lambda i: rank[i['level']])
+    return items
+
+
+def _pipeline():
+    counts = dict(ProjectRequirement.objects.order_by().values_list('status').annotate(n=Count('id')))
+    stages = [(k, label) for k, label in ProjectRequirement.STATUS_CHOICES if k != 'archived']
+    top = max([counts.get(k, 0) for k, _ in stages] + [1])
+    rows = [{'key': k, 'label': label, 'count': counts.get(k, 0),
+             'pct': round(counts.get(k, 0) / top * 100)} for k, label in stages]
+    return rows, sum(r['count'] for r in rows), counts.get('archived', 0)
+
+
+def _trend(days=30):
+    from django.db.models.functions import TruncDate
+    today = date.today()
+    start = today - timedelta(days=days - 1)
+
+    def per_day(model):
+        rows = (model.objects.filter(created_at__date__gte=start)
+                .annotate(d=TruncDate('created_at')).values('d')
+                .annotate(n=Count('id')).order_by())
+        return {r['d']: r['n'] for r in rows}
+
+    msgs, reqs = per_day(ContactMessage), per_day(ProjectRequirement)
+    dates = [start + timedelta(days=i) for i in range(days)]
+    top = max([msgs.get(d, 0) for d in dates] + [reqs.get(d, 0) for d in dates] + [1])
+
+    def h(n):
+        return 0 if not n else max(6, round(n / top * 100))
+
+    series = [{'label': d.strftime('%d %b'), 'm': msgs.get(d, 0), 'r': reqs.get(d, 0),
+               'mh': h(msgs.get(d, 0)), 'rh': h(reqs.get(d, 0))} for d in dates]
+    return {
+        'days': series, 'max': top,
+        'messages': sum(s['m'] for s in series), 'requirements': sum(s['r'] for s in series),
+        'start': series[0]['label'], 'mid': series[days // 2]['label'], 'end': series[-1]['label'],
+    }
+
+
 @login_required
 @role_required(['admin'])
 def dashboard(request):
+    from django.urls import reverse
+
+    def published_card(label, icon, url_name, model):
+        total = model.objects.count()
+        live = model.objects.filter(is_published=True).count()
+        hidden = total - live
+        return {'label': label, 'icon': icon, 'url': reverse(url_name), 'value': live, 'total': total,
+                'hint': ('%d hidden from the site' % hidden) if hidden else 'All published',
+                'delta': _week_delta(model.objects.all()), 'hot': False}
+
+    def inbox_card(label, icon, url_name, model):
+        new = model.objects.filter(status='new').count()
+        delta = _week_delta(model.objects.all())
+        return {'label': label, 'icon': icon, 'url': reverse(url_name), 'value': new, 'total': None,
+                'hint': '%d received this week' % delta['this_week'], 'delta': delta, 'hot': bool(new)}
+
+    pipeline, pipeline_total, pipeline_archived = _pipeline()
+    attention = _attention_items()
     context = {
         'active': 'home',
         'page_title': 'Dashboard',
-        'stats': {
-            'websites': WebsiteProject.objects.count(),
-            'backend': BackendProject.objects.count(),
-            'skills': Skill.objects.count(),
-            'messages_new': ContactMessage.objects.filter(status='new').count(),
-            'requirements_new': ProjectRequirement.objects.filter(status='new').count(),
-        },
+        'stat_cards': [
+            published_card('Website projects', 'i-globe', 'website_list', WebsiteProject),
+            published_card('Backend projects', 'i-server', 'backend_list', BackendProject),
+            published_card('Skills', 'i-bolt', 'skill_list', Skill),
+            inbox_card('New messages', 'i-mail', 'message_list', ContactMessage),
+            inbox_card('New requirements', 'i-inbox', 'requirement_list', ProjectRequirement),
+        ],
+        'attention': attention,
+        'pipeline': pipeline, 'pipeline_total': pipeline_total, 'pipeline_archived': pipeline_archived,
+        'trend': _trend(30),
         'recent_messages': ContactMessage.objects.all()[:5],
         'recent_requirements': ProjectRequirement.objects.all()[:5],
         'active_resume': Resume.objects.filter(is_active=True).first(),
