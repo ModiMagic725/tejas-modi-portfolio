@@ -1,0 +1,13 @@
+{% load static %}{# Floating portfolio assistant. Included once, just before </body>, on the six public pages. #}
+<div id="pcb-root" class="pcb-root"
+     data-pcb-endpoint="{% url 'chatbot_message' %}"
+     data-pcb-csrf="{{ csrf_token }}"
+     data-pcb-about="{% url 'about' %}"
+     data-pcb-websites="{% url 'frontend_work' %}"
+     data-pcb-contact="{% url 'contact' %}"
+     data-pcb-start="{% url 'start_a_project' %}"
+     data-pcb-music="{% url 'chatbot_music' %}"
+     data-pcb-greeting="{% static 'assets/chatbot/greeting.mp3' %}"></div>
+<link rel="stylesheet" href="{% static 'assets/chatbot/chatbot.css' %}" />
+<script src="{% static 'assets/chatbot/chatbot.js' %}" defer></script>
+<script src="{% static 'assets/chatbot/music.js' %}" defer></script>
