@@ -404,14 +404,14 @@
             </p>
             <div class="cta-row" data-aos="fade-up" data-aos-delay="240">
               <a class="btn p" href="#{% if experiences %}journey{% else %}do{% endif %}">Read my journey <span>↓</span></a>
-              {% if certificates %}<a class="btn" href="#certs"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-award" /></svg>Certificates</a>{% endif %}
+              {% if certificates %}<a class="btn" href="#certs"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-award" /></svg>Certificates &amp; Achievements</a>{% endif %}
               {% if has_resume %}<a class="btn" href="{% url 'resume_download' %}"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-download" /></svg>Resume</a>{% endif %}
             </div>
             {% if experiences or skills_count or certificates %}
             <ul class="hl-row" aria-label="Highlights" data-aos="fade-up" data-aos-delay="320">
               {% if experiences %}<li><b>{{ experiences|length }}</b><span>Role{{ experiences|length|pluralize }}</span></li>{% endif %}
               {% if skills_count %}<li><b>{{ skills_count }}</b><span>Technologies</span></li>{% endif %}
-              {% if certificates %}<li><b>{{ certificates|length }}</b><span>Certificate{{ certificates|length|pluralize }}</span></li>{% endif %}
+              {% if certificates %}<li><b>{{ certificates|length }}</b><span>Credential{{ certificates|length|pluralize }}</span></li>{% endif %}
             </ul>
             {% endif %}
           </div>
@@ -567,9 +567,9 @@
       <section id="certs">
         <div class="wrap">
           <div data-aos="fade-up">
-            <span class="eyebrow">Credentials</span>
-            <h2>Certificates</h2>
-            <p class="lead">Hover a card (or tap on a phone) to read what it covers, then view or download the PDF.</p>
+            <span class="eyebrow">Credentials &amp; Recognition</span>
+            <h2>Certificates &amp; Achievements</h2>
+            <p class="lead">Explore my professional certifications, achievements and letter of recommendation. View each document for more details or download its PDF.</p>
           </div>
           <ul class="cert-grid">
             {% for c in certificates %}
@@ -586,7 +586,7 @@
                 <div class="cc-body">
                   {% if c.issuer %}<span class="cc-iss">{{ c.issuer }}</span>{% endif %}
                   <h3>{{ c.name }}</h3>
-                  {% if c.pdf_file %}<span class="cc-pdf"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-file" /></svg>PDF certificate</span>{% endif %}
+                  {% if c.pdf_file %}<span class="cc-pdf"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-file" /></svg>PDF document</span>{% endif %}
                 </div>
                 {% if c.description or c.pdf_file %}
                 <div class="cc-more">
